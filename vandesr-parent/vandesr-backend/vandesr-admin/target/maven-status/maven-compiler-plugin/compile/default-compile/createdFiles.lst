@@ -1,7 +1,0 @@
-cn/com/vandesr/admin/AdminBootstrap.class
-cn/com/vandesr/admin/security/JwtUserDetailServiceImpl.class
-cn/com/vandesr/admin/mapper/UserMapper.class
-cn/com/vandesr/admin/service/impl/UserServiceImpl.class
-cn/com/vandesr/admin/entity/DemoUser.class
-cn/com/vandesr/admin/controller/UserController.class
-cn/com/vandesr/admin/service/UserService.class
