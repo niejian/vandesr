@@ -1,0 +1,9 @@
+cn/com/vandesr/config/mybatis/datasource/DataSourceConfig.class
+cn/com/vandesr/config/mybatis/enums/DBTypeEnum.class
+cn/com/vandesr/config/mybatis/aspect/MyDataSourceAop.class
+cn/com/vandesr/config/mybatis/datasource/DBContextHolder.class
+cn/com/vandesr/config/mybatis/datasource/RoutingDataSource.class
+cn/com/vandesr/config/mybatis/datasource/MyBatisConfig.class
+cn/com/vandesr/config/mybatis/annotation/Master.class
+cn/com/vandesr/config/mybatis/entity/DemoUser.class
+cn/com/vandesr/config/mybatis/mapper/UserMapper.class

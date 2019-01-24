@@ -1,0 +1,14 @@
+cn/com/vandesr/backend/config/mybatis/annotation/Master.class
+cn/com/vandesr/backend/config/security/WebSecurityConfig.class
+cn/com/vandesr/backend/config/mybatis/aspect/MyDataSourceAop.class
+cn/com/vandesr/backend/config/security/JwtTokenUtil.class
+cn/com/vandesr/backend/config/service/RedisService.class
+cn/com/vandesr/backend/config/mybatis/datasource/DBContextHolder.class
+cn/com/vandesr/backend/config/security/JwtUser.class
+cn/com/vandesr/backend/config/mybatis/datasource/MyBatisConfig.class
+cn/com/vandesr/backend/config/mybatis/datasource/DataSourceConfig.class
+cn/com/vandesr/backend/config/mybatis/datasource/RoutingDataSource.class
+cn/com/vandesr/backend/config/security/TokenUtil.class
+cn/com/vandesr/backend/config/service/impl/RedisServiceImpl.class
+cn/com/vandesr/backend/config/BackendCommonConfig.class
+cn/com/vandesr/backend/config/filter/JwtAuthenticationTokenFilter.class

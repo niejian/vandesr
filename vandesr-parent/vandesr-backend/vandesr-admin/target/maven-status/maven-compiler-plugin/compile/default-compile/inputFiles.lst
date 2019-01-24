@@ -1,0 +1,7 @@
+/Users/a/myproject/java/vandesr/vandesr-parent/vandesr-backend/vandesr-admin/src/main/java/cn/com/vandesr/admin/mapper/UserMapper.java
+/Users/a/myproject/java/vandesr/vandesr-parent/vandesr-backend/vandesr-admin/src/main/java/cn/com/vandesr/admin/service/impl/UserServiceImpl.java
+/Users/a/myproject/java/vandesr/vandesr-parent/vandesr-backend/vandesr-admin/src/main/java/cn/com/vandesr/admin/security/JwtUserDetailServiceImpl.java
+/Users/a/myproject/java/vandesr/vandesr-parent/vandesr-backend/vandesr-admin/src/main/java/cn/com/vandesr/admin/entity/DemoUser.java
+/Users/a/myproject/java/vandesr/vandesr-parent/vandesr-backend/vandesr-admin/src/main/java/cn/com/vandesr/admin/AdminBootstrap.java
+/Users/a/myproject/java/vandesr/vandesr-parent/vandesr-backend/vandesr-admin/src/main/java/cn/com/vandesr/admin/service/UserService.java
+/Users/a/myproject/java/vandesr/vandesr-parent/vandesr-backend/vandesr-admin/src/main/java/cn/com/vandesr/admin/controller/UserController.java
