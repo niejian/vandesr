@@ -1,5 +1,6 @@
 package cn.com.vandesr.admin.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.ToString;
 
@@ -11,6 +12,7 @@ import java.util.Date;
  */
 @Data
 @ToString
+@TableName("demo_user")
 public class DemoUser {
     /**
      *  `user_id` varchar(32) NOT NULL,

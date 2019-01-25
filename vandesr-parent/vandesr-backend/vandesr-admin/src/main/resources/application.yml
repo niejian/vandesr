@@ -5,12 +5,12 @@ mybatis-plus:
 spring:
   datasource:
     master:
-      jdbc-url: jdbc:mysql://yun2:3306/demo
+      jdbc-url: jdbc:mysql://yun2:3306/vandesr
       username: root
       password: root
       driver-class-name: com.mysql.jdbc.Driver
     slave:
-      jdbc-url: jdbc:mysql://yun2:3306/demo_2
+      jdbc-url: jdbc:mysql://yun2:3306/vandesr
       username: root   # 只读账户
       password: root
       driver-class-name: com.mysql.jdbc.Driver

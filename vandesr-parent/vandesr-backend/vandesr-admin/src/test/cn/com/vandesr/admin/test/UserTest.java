@@ -1,6 +1,8 @@
 package cn.com.vandesr.admin.test;
 
 import cn.com.vandesr.admin.entity.DemoUser;
+import cn.com.vandesr.admin.entity.VandesrUser;
+import cn.com.vandesr.admin.service.IVandesrUserService;
 import cn.com.vandesr.admin.service.UserService;
 import cn.com.vandesr.backend.config.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -29,16 +32,26 @@ public class UserTest {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private IVandesrUserService vandesrUserService;
 
-    @Ignore
+//    @Ignore
     @Test
     public void addUser() {
-        DemoUser user = new DemoUser();
-        user.setCreateDate(new Date());
-        user.setUserPassword(passwordEncoder.encode("qq123123"));
+//        DemoUser user = new DemoUser();
+//        user.setCreateDate(new Date());
+//        user.setUserPassword(passwordEncoder.encode("qq123123"));
+//        user.setUserName("niejian");
+//        user.setUserId("100100113");
+//        this.userService.addUser(user);
+        VandesrUser user = new VandesrUser();
         user.setUserName("niejian");
-        user.setUserId("100100113");
-        this.userService.addUser(user);
+        user.setUserCode("1001001");
+        user.setUpdateDate(new Date());
+        user.setPwd(passwordEncoder.encode("qq123123"));
+        user.setLoginName("1001001");
+        user.setCreateDate(new Date());
+        vandesrUserService.save(user);
     }
 
     @Ignore

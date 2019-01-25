@@ -47,7 +47,18 @@
             <artifactId>mybatis-config</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.28</version>
+        </dependency>
+
     </dependencies>
+
+
+
 
 
 </project>
