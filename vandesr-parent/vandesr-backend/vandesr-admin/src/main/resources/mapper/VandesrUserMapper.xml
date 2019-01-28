@@ -5,6 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.com.vandesr.admin.entity.VandesrUser">
         <id column="id" property="id" />
+        <result column="email" property="email" />
         <result column="login_name" property="loginName" />
         <result column="user_code" property="userCode" />
         <result column="user_name" property="userName" />
@@ -17,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, login_name, user_code, user_name, pwd, delete_flag, avatar, create_date, update_date
+        id, email, login_name, user_code, user_name, pwd, delete_flag, avatar, create_date, update_date
     </sql>
 
 </mapper>

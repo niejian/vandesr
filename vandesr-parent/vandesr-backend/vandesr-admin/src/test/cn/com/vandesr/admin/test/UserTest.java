@@ -37,21 +37,14 @@ public class UserTest {
 
 //    @Ignore
     @Test
-    public void addUser() {
+    public void addUser() throws Exception{
 //        DemoUser user = new DemoUser();
 //        user.setCreateDate(new Date());
 //        user.setUserPassword(passwordEncoder.encode("qq123123"));
 //        user.setUserName("niejian");
 //        user.setUserId("100100113");
 //        this.userService.addUser(user);
-        VandesrUser user = new VandesrUser();
-        user.setUserName("niejian");
-        user.setUserCode("1001001");
-        user.setUpdateDate(new Date());
-        user.setPwd(passwordEncoder.encode("qq123123"));
-        user.setLoginName("1001001");
-        user.setCreateDate(new Date());
-        vandesrUserService.save(user);
+        this.vandesrUserService.addUser("code4fun", "code4fun@qq.com", "qq123123");
     }
 
     @Ignore

@@ -1,3 +1,4 @@
+
 mybatis-plus:
   mapper-location: classpath*:mapper/*.xml
   configuration:
@@ -26,4 +27,8 @@ spring:
     sentinel:
       master: mymaster
       nodes: yun2:27001
+  application:
+    name: vandesr-admin
+server:
+  port: 8088
 

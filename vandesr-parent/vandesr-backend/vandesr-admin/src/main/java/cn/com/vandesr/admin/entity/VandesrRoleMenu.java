@@ -19,16 +19,16 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class VandesrRole implements Serializable {
+public class VandesrRoleMenu implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private String roleCode;
+    private Integer roleId;
 
-    private String roleName;
+    private Integer menuId;
 
     private Integer deleteFlag;
 

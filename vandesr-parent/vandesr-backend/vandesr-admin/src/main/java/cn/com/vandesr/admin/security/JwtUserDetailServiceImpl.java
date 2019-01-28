@@ -1,17 +1,25 @@
 package cn.com.vandesr.admin.security;
 
-import cn.com.vandesr.admin.entity.DemoUser;
-import cn.com.vandesr.admin.mapper.UserMapper;
+import cn.com.vandesr.admin.entity.VandesrRole;
+import cn.com.vandesr.admin.entity.VandesrUser;
+import cn.com.vandesr.admin.entity.VandesrUserRole;
+import cn.com.vandesr.admin.service.IVandesrRoleService;
+import cn.com.vandesr.admin.service.IVandesrUserRoleService;
+import cn.com.vandesr.admin.service.IVandesrUserService;
+import cn.com.vandesr.backend.config.exception.AccountNotFountException;
 import cn.com.vandesr.backend.config.security.JwtUser;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,11 +28,17 @@ import java.util.Set;
  * @author: nj
  * @date: 2019/1/24:下午4:27
  */
+@Slf4j
 @Service
 public class JwtUserDetailServiceImpl implements UserDetailsService {
 
     @Autowired
-    private UserMapper userMapper;
+    private IVandesrUserService userService;
+    @Autowired
+    private IVandesrUserRoleService userRoleService;
+    @Autowired
+    private IVandesrRoleService roleService;
+
 
     /**
      * Locates the user based on the username. In the actual implementation, the search
@@ -40,20 +54,69 @@ public class JwtUserDetailServiceImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        QueryWrapper<DemoUser> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", username);
-        List<DemoUser> demoUsers = userMapper.selectList(queryWrapper);
-        if (CollectionUtils.isEmpty(demoUsers)) {
-            throw new UsernameNotFoundException("用户名不存在");
+        QueryWrapper<VandesrUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("email", username)
+                .eq("delete_flag", 0);
+        //通过登陆账号查询用户信息
+        VandesrUser user = userService.getOne(queryWrapper);
+        if (null == user) {
+            try {
+                throw new AccountNotFountException("登陆账号不存在");
+            } catch (Exception e) {
+
+            }
+
+            return new JwtUser(null, null, null);
+
 
         } else {
-            DemoUser user = demoUsers.get(0);
+
             //获取密码。
-            String userPassword = user.getUserPassword();
-            Set<GrantedAuthority> authorities = new HashSet<>();
+            String userPassword = user.getPwd();
+            //获取用户权限信息
+            Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+            List<String> roleCodeList = getUserRolesByUserId(user.getId());
+            roleCodeList.forEach(roleCode -> {
+                authorities.add(new SimpleGrantedAuthority(roleCode));
+            });
             return new JwtUser(username, userPassword, authorities);
         }
 
 
+    }
+
+    /**
+     * 根据用户id获取用户角色信息
+     * @return
+     */
+    private List<String> getUserRolesByUserId(int userId) {
+        List<String> roleCodeList = new ArrayList<>();
+        QueryWrapper<VandesrUserRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("delete_flag", 0)
+                .eq("user_id", userId);
+        List<VandesrUserRole> userRoles = this.userRoleService.list(queryWrapper);
+        List<Integer> roleIdList = new ArrayList<>();
+        userRoles.forEach(userRole -> {
+            roleIdList.add(userRole.getRoleId());
+        });
+
+        List<VandesrRole> roleList = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(roleIdList)) {
+            QueryWrapper<VandesrRole> roleWrapper = new QueryWrapper<>();
+            roleWrapper.eq("delete_flag", 0)
+                    .in("id", roleIdList);
+            roleList = this.roleService.list(roleWrapper);
+        }
+
+        if (!CollectionUtils.isEmpty(roleList)) {
+            roleList.forEach(role -> {
+                roleCodeList.add(role.getRoleCode());
+            });
+        }
+
+        log.info("---->角色信息：{}", roleCodeList.toString());
+
+        return roleCodeList;
     }
 }

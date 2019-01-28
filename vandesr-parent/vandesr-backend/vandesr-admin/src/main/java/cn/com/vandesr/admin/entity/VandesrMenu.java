@@ -1,8 +1,8 @@
 package cn.com.vandesr.admin.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,13 +42,13 @@ public class VandesrMenu implements Serializable {
 
     private Integer deleteFlag;
 
-    private LocalDateTime createDate;
+    private Date createDate;
 
     private String createUserCode;
 
     private String createUserName;
 
-    private LocalDateTime updateDate;
+    private Date updateDate;
 
     private String updateUserCode;
 

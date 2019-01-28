@@ -6,6 +6,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author: nj
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @Slf4j
 @SpringBootApplication
+@EnableTransactionManagement
 @MapperScan("cn.com.vandesr.admin.mapper")
 
 @ComponentScan({

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
+import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import org.springframework.util.StringUtils;
@@ -46,6 +47,7 @@ public class MPGenerateUtil {
 
         // 全局配置
         GlobalConfig gc = new GlobalConfig();
+        gc.setDateType(DateType.ONLY_DATE);
         String projectPath = System.getProperty("user.dir");
         gc.setOutputDir(projectPath + "/vandesr-backend/vandesr-admin/src/main/java");
         gc.setAuthor("code4fun");
