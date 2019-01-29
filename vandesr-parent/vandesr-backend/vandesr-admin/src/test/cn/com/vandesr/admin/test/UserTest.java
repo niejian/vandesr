@@ -4,8 +4,10 @@ import cn.com.vandesr.admin.entity.DemoUser;
 import cn.com.vandesr.admin.entity.VandesrUser;
 import cn.com.vandesr.admin.service.IVandesrUserService;
 import cn.com.vandesr.admin.service.UserService;
+import cn.com.vandesr.admin.vo.MenuVo;
 import cn.com.vandesr.backend.config.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: nj
@@ -54,5 +57,14 @@ public class UserTest {
         JSONObject json = JSONObject.fromObject(user);
         log.info("---------------");
         log.info(json.toString());
+    }
+
+    @Test
+    public void getUserMenuTree() throws Exception{
+        List<MenuVo> menuVoList = this.vandesrUserService.getUserMenuByUserId(1);
+        log.info("==========");
+        log.info(JSONArray.fromObject(menuVoList).toString());
+        log.info("==========");
+
     }
 }

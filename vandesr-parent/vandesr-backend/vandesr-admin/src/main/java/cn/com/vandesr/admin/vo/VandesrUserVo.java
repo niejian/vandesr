@@ -4,6 +4,7 @@ import cn.com.vandesr.admin.entity.VandesrUser;
 import lombok.Data;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,6 +13,6 @@ import java.util.List;
  */
 @Data
 @ToString
-public class VandesrUserVo extends VandesrUser {
+public class VandesrUserVo extends VandesrUser implements Serializable {
     private List<String> roles;
 }
