@@ -200,6 +200,8 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
                         menuVo = menu2MenuVo(parentMenu);
                         idMenuMap.put(parentId, menuVo);
                     }
+                    // map中没有父节点信息，从数据库中查找对应的父节点信息
+                    parentMenu = this.getMenuByMenuId(parentId);
 
                 }
 
@@ -296,19 +298,7 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
                 break;
             }
 
-//            //往里面添加元素
-//            for (int i = 2; i < menuIds.length; i++) {
-//                String menuId = menuIds[i];
-//                //获取menuId的菜单信息
-//                VandesrMenu menu = this.getMenuByMenuId(menuId);
-//                MenuVo menuVo = this.menu2MenuVo(menu);
-//                List<MenuVo> childrens = result.get(rootMenuId);
-//
-//
-//
-//
-//
-//            }
+
         }
 
 
