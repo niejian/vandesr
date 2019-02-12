@@ -4,6 +4,7 @@ import cn.com.vandesr.admin.entity.VandesrUser;
 import cn.com.vandesr.admin.service.IVandesrUserService;
 import cn.com.vandesr.admin.service.UserService;
 import cn.com.vandesr.admin.vo.VandesrUserVo;
+import cn.com.vandesr.backend.config.aop.LogAspect;
 import cn.com.vandesr.backend.config.exception.AccountNotFountException;
 import cn.com.vandesr.backend.config.security.JwtUser;
 import cn.com.vandesr.backend.config.security.TokenUtil;
@@ -170,6 +171,7 @@ public class UserController {
         return user;
     }
 
+    @LogAspect
     @PostMapping("/getUserInfo")
     public BaseResponseExt<VandesrUserVo> getUserInfo(HttpServletRequest request) {
         BaseResponseExt<VandesrUserVo> baseResponseExt = new BaseResponseExt();

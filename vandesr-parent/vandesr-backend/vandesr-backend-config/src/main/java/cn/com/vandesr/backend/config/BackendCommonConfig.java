@@ -8,6 +8,7 @@ import org.springframework.context.annotation.*;
  * @author: nj
  * @date: 2019/1/24:下午2:33
  */
+@EnableAspectJAutoProxy
 @EnableAutoConfiguration
 @Configuration
 @ComponentScan(basePackages = {
