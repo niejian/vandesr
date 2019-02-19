@@ -14,5 +14,8 @@ import java.util.List;
 @Data
 @ToString
 public class VandesrUserVo extends VandesrUser implements Serializable {
+    /**用户角色信息*/
     private List<String> roles;
+    /**用户菜单信息*/
+    private List<MenuVo> userMenus;
 }

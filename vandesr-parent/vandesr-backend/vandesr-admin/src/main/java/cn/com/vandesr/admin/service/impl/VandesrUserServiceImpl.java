@@ -323,7 +323,7 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
         menuVo.setMenuId(menu.getId() + "");
         menuVo.setMenuCode(menu.getMenuCode());
         //路径
-        menuVo.setIndex(menu.getMenuUrl());
+        menuVo.setPath(menu.getMenuUrl());
         return menuVo;
     }
 
@@ -336,7 +336,7 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
             menuVo.setMenuId(menu.getId() + "");
             menuVo.setMenuCode(menu.getMenuCode());
             //路径
-            menuVo.setIndex(menu.getMenuUrl());
+            menuVo.setPath(menu.getMenuUrl());
             menuVoList.add(menuVo);
         });
 

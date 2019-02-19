@@ -117,17 +117,22 @@
                     if (isSuccess && 0 == responseCode){
                         let data = responseData.data;
                         if(null != data){
+                            debugger
                             //let user = data.user;
                             let roles = data.roles;
 
                             let email = data.email;
                             let avatar = data.avatar;
                             let userName = data.userName;
+                            // 用户菜单信息
+                            let userMenus = data.userMenus;
+
 
                             sessionStorage.setItem('login_user_name', userName);
                             sessionStorage.setItem('login_user_account', email);
                             sessionStorage.setItem('login_user_avatar', avatar);
-                            sessionStorage.setItem('login_user_roles', roles);
+                            sessionStorage.setItem('login_user_roles', JSON.stringify(roles));
+                            sessionStorage.setItem('login_user_menus', JSON.stringify(userMenus));
 
                             //条状
                             this.$router.push("/")

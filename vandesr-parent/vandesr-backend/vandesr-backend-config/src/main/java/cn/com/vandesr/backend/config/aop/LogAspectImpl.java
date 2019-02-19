@@ -3,6 +3,7 @@ package cn.com.vandesr.backend.config.aop;
 import cn.com.vandesr.backend.config.utils.CommonFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -12,6 +13,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author: nj
@@ -58,5 +61,16 @@ public class LogAspectImpl {
 //                }
             }
         }
+    }
+
+    /**
+     * 后置处理
+     */
+    @After(value = "logAspect()")
+    public void logAfter(JoinPoint joinPoint) {
+        String methodName = joinPoint.getSignature().getName();
+        List<Object> args = Arrays.asList(joinPoint.getArgs());
+        log.info("调用方法{}结束, 返回结果：{}", methodName, args.toString());
+
     }
 }

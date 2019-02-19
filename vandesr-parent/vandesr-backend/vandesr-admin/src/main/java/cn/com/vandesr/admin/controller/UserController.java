@@ -3,6 +3,7 @@ package cn.com.vandesr.admin.controller;
 import cn.com.vandesr.admin.entity.VandesrUser;
 import cn.com.vandesr.admin.service.IVandesrUserService;
 import cn.com.vandesr.admin.service.UserService;
+import cn.com.vandesr.admin.vo.MenuVo;
 import cn.com.vandesr.admin.vo.VandesrUserVo;
 import cn.com.vandesr.backend.config.aop.LogAspect;
 import cn.com.vandesr.backend.config.exception.AccountNotFountException;
@@ -24,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,6 +54,7 @@ public class UserController {
     private IVandesrUserService vandesrUserService;
 
 
+    @Transactional
     @PostMapping(value = "/register")
     public BaseResponse register(@RequestBody JSONObject jsonObject) {
         BaseResponse response = new BaseResponse();
@@ -197,6 +200,9 @@ public class UserController {
             });
             user.setRoles(roleList);
 
+            //获取用户菜单信息
+            List<MenuVo> menuVoList = this.vandesrUserService.getUserMenuByUserId(vandesrUser.getId());
+            user.setUserMenus(menuVoList);
             baseResponseExt.setData(user);
         } catch (Exception e) {
             baseResponseExt.setData(null);
