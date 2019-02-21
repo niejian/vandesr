@@ -14,7 +14,11 @@ function generateMenu(routers, data) {
     data.forEach((item) => {
         
         let menu = Object.assign({}, item);
-        menu.index = lazyLoading(menu.index);
+        let path = menu.path;
+        // if (path && path.indexOf('/') >= 0){
+        //     path = path.substring(1)
+        // }
+        menu.component = lazyLoading(path);
         if(!item.leaf) {
             menu.children = []
             generateMenu(menu.children, item.children) 

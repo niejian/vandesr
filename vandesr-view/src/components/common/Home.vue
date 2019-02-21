@@ -25,7 +25,9 @@
         data(){
             return {
                 tagsList: [],
-                collapse: false
+                collapse: false,
+                // 路由节点信息
+                nodes: this.$router.options.routes
             }
         },
         components:{
@@ -44,7 +46,14 @@
                     msg[i].name && arr.push(msg[i].name);
                 }
                 this.tagsList = arr;
-            })
+            });
+
+            // 加载动态路由信息
+            let data = JSON.parse(sessionStorage.getItem('login_user_menus'));
+            if (data) {
+                this.nodes.push(...data);
+			    console.log(this.nodes);
+            }
         }
     }
 </script>

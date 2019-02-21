@@ -76,6 +76,10 @@ axios.defaults.headers.common['Authorization'] = token;
 //         }
 //     }
 // })
+debugger
+console.log('-------------')
+console.log(router.options.routes)
+console.log('-------------')
 
 router.beforeEach((to, from, next) => {
     let token = sessionStorage.getItem(loginAccount + '_token_key');
@@ -111,7 +115,17 @@ router.beforeEach((to, from, next) => {
           }
     }
     
-})
+});
+
+function formatUserMenus(userMenus) {
+    for(let i = 0; i < userMenus.length; i++) {
+        let userMenu = userMenus[i];
+        let children = userMenu.children;
+        if (null != children && children.length == 0) {
+            delete userMenus[i].children;
+        }
+    }
+}
 
 new Vue({
     axios,

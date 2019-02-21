@@ -2,27 +2,28 @@
     <div class="sidebar">
         <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
             text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
-            <template v-for="item in items">
-                <template v-if="item.subs">
-                    <el-submenu :index="item.index" :key="item.index">
+            <template v-for="item in nodes">
+                <template v-if="item.children ">
+                    
+                    <el-submenu :index="item.path" :key="item.path">
                         <template slot="title">
                             <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
                         </template>
-                        <template v-for="subItem in item.subs">
-                            <el-submenu v-if="subItem.subs" :index="subItem.index" :key="subItem.index">
+                        <template v-for="subItem in item.children">
+                            <el-submenu v-if="subItem.children" :index="subItem.path" :key="subItem.path">
                                 <template slot="title">{{ subItem.title }}</template>
-                                <el-menu-item v-for="(threeItem,i) in subItem.subs" :key="i" :index="threeItem.index">
+                                <el-menu-item v-for="(threeItem,i) in subItem.children" :key="i" :index="threeItem.path">
                                     {{ threeItem.title }}
                                 </el-menu-item>
                             </el-submenu>
-                            <el-menu-item v-else :index="subItem.index" :key="subItem.index">
+                            <el-menu-item v-else :index="subItem.path" :key="subItem.path">
                                 {{ subItem.title }}
                             </el-menu-item>
                         </template>
                     </el-submenu>
                 </template>
                 <template v-else>
-                    <el-menu-item :index="item.index" :key="item.index">
+                    <el-menu-item :index="item.path" :key="item.path">
                         <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
                     </el-menu-item>
                 </template>
@@ -37,76 +38,79 @@
         data() {
             return {
                 collapse: false,
+                // 构造动态路由菜单信息
+                // 路由节点信息
+                nodes: this.$router.options.routes,
                 items: [
                     {
                         icon: 'el-icon-lx-home',
                         index: 'dashboard',
                         title: '系统首页'
                     },
-                    {
-                        icon: 'el-icon-lx-cascades',
-                        index: 'table',
-                        title: '基础表格'
-                    },
-                    {
-                        icon: 'el-icon-lx-copy',
-                        index: 'tabs',
-                        title: 'tab选项卡'
-                    },
-                    {
-                        icon: 'el-icon-lx-calendar',
-                        index: '3',
-                        title: '表单相关',
-                        subs: [
-                            {
-                                index: 'form',
-                                title: '基本表单'
-                            },
-                            {
-                                index: '3-2',
-                                title: '三级菜单',
-                                subs: [
-                                    {
-                                        index: 'editor',
-                                        title: '富文本编辑器'
-                                    },
-                                    {
-                                        index: 'markdown',
-                                        title: 'markdown编辑器'
-                                    },
-                                ]
-                            },
-                            {
-                                index: 'upload',
-                                title: '文件上传'
-                            }
-                        ]
-                    },
-                    {
-                        icon: 'el-icon-lx-emoji',
-                        index: 'icon',
-                        title: '自定义图标'
-                    },
-                    {
-                        icon: 'el-icon-lx-favor',
-                        index: 'charts',
-                        title: 'schart图表'
-                    },
-                    {
-                        icon: 'el-icon-rank',
-                        index: '6',
-                        title: '拖拽组件',
-                        subs: [
-                            {
-                                index: 'drag',
-                                title: '拖拽列表',
-                            },
-                            {
-                                index: 'dialog',
-                                title: '拖拽弹框',
-                            }
-                        ]
-                    }, 
+                    // {
+                    //     icon: 'el-icon-lx-cascades',
+                    //     index: 'table',
+                    //     title: '基础表格'
+                    // },
+                    // {
+                    //     icon: 'el-icon-lx-copy',
+                    //     index: 'tabs',
+                    //     title: 'tab选项卡'
+                    // },
+                    // {
+                    //     icon: 'el-icon-lx-calendar',
+                    //     index: '3',
+                    //     title: '表单相关',
+                    //     subs: [
+                    //         {
+                    //             index: 'form',
+                    //             title: '基本表单'
+                    //         },
+                    //         {
+                    //             index: '3-2',
+                    //             title: '三级菜单',
+                    //             subs: [
+                    //                 {
+                    //                     index: 'editor',
+                    //                     title: '富文本编辑器'
+                    //                 },
+                    //                 {
+                    //                     index: 'markdown',
+                    //                     title: 'markdown编辑器'
+                    //                 },
+                    //             ]
+                    //         },
+                    //         {
+                    //             index: 'upload',
+                    //             title: '文件上传'
+                    //         }
+                    //     ]
+                    // },
+                    // {
+                    //     icon: 'el-icon-lx-emoji',
+                    //     index: 'icon',
+                    //     title: '自定义图标'
+                    // },
+                    // {
+                    //     icon: 'el-icon-lx-favor',
+                    //     index: 'charts',
+                    //     title: 'schart图表'
+                    // },
+                    // {
+                    //     icon: 'el-icon-rank',
+                    //     index: '6',
+                    //     title: '拖拽组件',
+                    //     subs: [
+                    //         {
+                    //             index: 'drag',
+                    //             title: '拖拽列表',
+                    //         },
+                    //         {
+                    //             index: 'dialog',
+                    //             title: '拖拽弹框',
+                    //         }
+                    //     ]
+                    // }, 
                     {
                         icon: 'el-icon-lx-warn',
                         index: '7',
@@ -127,7 +131,6 @@
         },
         computed:{
             onRoutes(){
-                console.log(this.$route.path)
                 return this.$route.path.replace('/','');
             }
         },
@@ -135,7 +138,16 @@
             // 通过 Event Bus 进行组件间通信，来折叠侧边栏
             bus.$on('collapse', msg => {
                 this.collapse = msg;
-            })
+            });
+
+             // 加载动态路由信息
+            let data = JSON.parse(sessionStorage.getItem('login_user_menus'));
+            if (data) {
+                debugger
+                this.nodes.push(...data);
+                this.nodes = Array.from(new Set(this.nodes));
+			    console.log(this.nodes);
+            }
         }
     }
 </script>
