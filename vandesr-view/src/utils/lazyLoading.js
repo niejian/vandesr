@@ -1,1 +1,1 @@
-export default (name) => () => require(`@/components/${name}.vue`)
+export default (name) => () => import(`@/components/page/${name}.vue`)

@@ -29,7 +29,7 @@ public class MenuVo implements Serializable {
     private String title;
     private String menuId;
     private String menuCode;
-    private List<MenuVo> childrens = new ArrayList<>();
+    private List<MenuVo> children = new ArrayList<>();
 
 
 
@@ -38,7 +38,7 @@ public class MenuVo implements Serializable {
      * @param menuVo
      */
     public void addChildrens(MenuVo menuVo) {
-        this.childrens.add(menuVo);
+        this.children.add(menuVo);
     }
 
 }

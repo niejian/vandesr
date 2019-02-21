@@ -12,11 +12,12 @@ export default (routers, data) => {
  */
 function generateMenu(routers, data) {
     data.forEach((item) => {
+        
         let menu = Object.assign({}, item);
         menu.index = lazyLoading(menu.index);
         if(!item.leaf) {
-            menu.childrens = []
-            generateMenu(menu.childrens,item.childrens) 
+            menu.children = []
+            generateMenu(menu.children, item.children) 
         }
 
         routers.push(menu);

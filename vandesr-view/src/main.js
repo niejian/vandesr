@@ -34,19 +34,20 @@ let token = sessionStorage.getItem(loginAccount + '_token_key');
 axios.defaults.headers.common['Authorization'] = token;
 
 // 获取用户菜单信息
-let userMenus = sessionStorage.getItem('login_user_menus');
-if (null != userMenus) {
-    userMenus = JSON.parse(userMenus);
+// let userMenus = sessionStorage.getItem('login_user_menus');
+// if (null != userMenus) {
+//     userMenus = JSON.parse(userMenus);
 
-}
+// }
 
-if (userMenus){
-    //这里是防止用户手动刷新页面，整个app要重新加载,动态新增的路由，会消失，所以我们重新add一次
-    let routes = []
-    MenuUtils(routes, userMenus)
-    router.addRoutes(routes)
-    window.sessionStorage.removeItem('isLoadNodes')
-  }
+// if (userMenus){
+//     //这里是防止用户手动刷新页面，整个app要重新加载,动态新增的路由，会消失，所以我们重新add一次
+//     let routes = []
+//     MenuUtils(routes, userMenus)
+//     router.addRoutes(routes)
+//     console.log(router)
+//     // window.sessionStorage.removeItem('isLoadNodes')
+//   }
 
 
         
@@ -77,14 +78,29 @@ if (userMenus){
 // })
 
 router.beforeEach((to, from, next) => {
-    debugger
-    let userMenus = sessionStorage.getItem('login_user_menus');
+    let token = sessionStorage.getItem(loginAccount + '_token_key');
+    console.log('token --->' + token);
 
+    let userMenus = sessionStorage.getItem('login_user_menus');
     if (null != userMenus) {
         userMenus = JSON.parse(userMenus);
-    
+
     }
 
+    if (userMenus){
+        //这里是防止用户手动刷新页面，整个app要重新加载,动态新增的路由，会消失，所以我们重新add一次
+        let routes = []
+        MenuUtils(routes, userMenus)
+        router.addRoutes(routes)
+        console.log(router)
+        // window.sessionStorage.removeItem('isLoadNodes')
+    }
+
+
+    //为每个请求添加请求头
+    axios.defaults.headers.common['Authorization'] = token;
+    debugger
+    
     if (!userMenus && to.path !== '/login') {
         next({path : '/login'})
     }else {

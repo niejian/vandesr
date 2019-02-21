@@ -26,6 +26,11 @@
     import md5 from 'js-md5'
     import httpPost from '@/lib/http';
     import storage from '@/lib/storage';
+    //动态加载路由信息
+    import MenuUtils from '@/utils/menuUtil';
+
+    var routers = [];
+
     export default {
         data: function(){
             return {
@@ -79,8 +84,9 @@
                                 this.$store.commit('setLoginAccount', this.ruleForm.username)
                                 storage.setItem('login_account', this.ruleForm.username);
                                 storage.setItem(this.ruleForm.username + "_token_key", token);
+                                debugger
                                 //获取用户权限
-                                this.getUserInfo(baseUrl + "/user/getUserInfo")
+                                this.getUserInfo(baseUrl + "/user/getUserInfo", token)
                                 
                             }else {
                                 //登陆失败
@@ -104,10 +110,19 @@
                     }
                 });
             },
-            getUserInfo(url) {
-                this.$axios.post(
-                    url,
-                    {}
+            handleLoginRouters(data) {
+                // 登陆成功后处理路由信息
+                MenuUtils(routers, data)
+            },
+            getUserInfo(url, token) {
+
+                this.$axios({
+                        url: url,
+                        method: 'post',
+                        headers: {
+                            Authorization: token
+                        }
+                    }
                 ).then(res => {
                     debugger
                     let responseData = res.data;
@@ -134,9 +149,14 @@
                             sessionStorage.setItem('login_user_roles', JSON.stringify(roles));
                             sessionStorage.setItem('login_user_menus', JSON.stringify(userMenus));
 
-                            //条状
+                            //动态加载路由信息
+                            debugger
+                            //动态添加路由信息
+                            this.handleLoginRouters(userMenus)
+                            debugger
+                            this.$router.addRoutes(routers)
                             this.$router.push("/")
-
+                            
                         }
                     }
 
