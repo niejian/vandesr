@@ -26,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -202,6 +203,12 @@ public class UserController {
 
             //获取用户菜单信息
             List<MenuVo> menuVoList = this.vandesrUserService.getUserMenuByUserId(vandesrUser.getId());
+//            for (int i = 0; i < menuVoList.size(); i++) {
+//                if (!CollectionUtils.isEmpty(menuVoList.get(i).getChildren())) {
+//                    menuVoList.get(i).setHasChildren(true);
+//                }
+//            }
+
             user.setUserMenus(menuVoList);
             baseResponseExt.setData(user);
         } catch (Exception e) {

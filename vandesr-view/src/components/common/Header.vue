@@ -70,6 +70,9 @@
                 if(command == 'loginout'){
                     //localStorage.removeItem('ms_username')
                     sessionStorage.clear();
+                    //清空router信息
+                    this.$router.options.routes = [];
+                    console.log(this.$router)
                     this.$router.push('/login');
                 }
             },

@@ -30,6 +30,7 @@ public class MenuVo implements Serializable {
     private String menuId;
     private String menuCode;
     private List<MenuVo> children = new ArrayList<>();
+    private boolean hasChildren = false;
 
 
 

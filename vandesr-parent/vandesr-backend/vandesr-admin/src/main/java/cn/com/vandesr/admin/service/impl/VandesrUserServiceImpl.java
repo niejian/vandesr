@@ -234,7 +234,9 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
                     MenuVo parentMenu = idMenuMap.get(node.getParentId() + "");
 
                     if (null != parentMenu) {
+
                         idMenuMap.get(node.getParentId() + "").addChildrens(node);
+                        idMenuMap.get(node.getParentId() + "").setHasChildren(true);
 
                     }
 

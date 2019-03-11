@@ -3,14 +3,14 @@
         <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
             text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
             <template v-for="item in nodes">
-                <template v-if="item.children ">
+                <template v-if="item.hasChildren ">
                     
                     <el-submenu :index="item.path" :key="item.path">
                         <template slot="title">
                             <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
                         </template>
                         <template v-for="subItem in item.children">
-                            <el-submenu v-if="subItem.children" :index="subItem.path" :key="subItem.path">
+                            <el-submenu v-if="subItem.hasChildren" :index="subItem.path" :key="subItem.path">
                                 <template slot="title">{{ subItem.title }}</template>
                                 <el-menu-item v-for="(threeItem,i) in subItem.children" :key="i" :index="threeItem.path">
                                     {{ threeItem.title }}
@@ -134,19 +134,45 @@
                 return this.$route.path.replace('/','');
             }
         },
+        methods: {
+            //通过和当前nodes比对，如果data种有路径相同的就不加载到router中
+            getUniqueRoute(data) {
+                let existRouteLength = this.nodes.length;
+                let dataLength = data.length;
+                for(let i = 0; i < existRouteLength; i++){
+                    let existRoute = this.nodes[i];
+                    let existMenuId = existRoute.menuId;
+                    for (let j = 0; j < dataLength; j++) {
+                        let dataRoute = data[j];
+                        let dataMenuId = dataRoute.menuId;
+                        // 如果两个菜单相同，则不添加到路由中
+                        if (existMenuId !== dataMenuId) {
+                            this.nodes.push(dataRoute)
+                        }
+                    }
+                }
+                    
+                }
+            
+        },
         created(){
             // 通过 Event Bus 进行组件间通信，来折叠侧边栏
             bus.$on('collapse', msg => {
                 this.collapse = msg;
             });
-
+             debugger
              // 加载动态路由信息
             let data = JSON.parse(sessionStorage.getItem('login_user_menus'));
-            if (data) {
+            // 是否已经加载路由信息
+            let isLoadNodes = sessionStorage.getItem('isLoadNodes')
+            if (data && !isLoadNodes) {
                 debugger
                 this.nodes.push(...data);
+                //this.getUniqueRoute(data)
                 this.nodes = Array.from(new Set(this.nodes));
-			    console.log(this.nodes);
+                sessionStorage.setItem('isLoadNodes', 'true')
+                console.log('-----加载到的动态路由信息-----');
+			    console.log(this.$router);
             }
         }
     }

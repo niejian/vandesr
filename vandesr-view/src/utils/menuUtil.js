@@ -12,7 +12,7 @@ export default (routers, data) => {
  */
 function generateMenu(routers, data) {
     data.forEach((item) => {
-        
+        debugger
         let menu = Object.assign({}, item);
         let path = menu.path;
         // if (path && path.indexOf('/') >= 0){

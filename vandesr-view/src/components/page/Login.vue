@@ -150,11 +150,11 @@
                             sessionStorage.setItem('login_user_menus', JSON.stringify(userMenus));
 
                             //动态加载路由信息
-                            debugger
+                            //debugger
                             //动态添加路由信息
-                            this.handleLoginRouters(userMenus)
+                            //this.handleLoginRouters(userMenus)
                             debugger
-                            this.$router.addRoutes(routers)
+                            //this.$router.addRoutes(routers)
                             this.$router.push("/")
                             
                         }

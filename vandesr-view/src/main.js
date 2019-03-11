@@ -34,11 +34,11 @@ let token = sessionStorage.getItem(loginAccount + '_token_key');
 axios.defaults.headers.common['Authorization'] = token;
 
 // 获取用户菜单信息
-// let userMenus = sessionStorage.getItem('login_user_menus');
-// if (null != userMenus) {
-//     userMenus = JSON.parse(userMenus);
+let userMenus = sessionStorage.getItem('login_user_menus');
+if (null != userMenus) {
+    userMenus = JSON.parse(userMenus);
 
-// }
+}
 
 // if (userMenus){
 //     //这里是防止用户手动刷新页面，整个app要重新加载,动态新增的路由，会消失，所以我们重新add一次
@@ -46,7 +46,7 @@ axios.defaults.headers.common['Authorization'] = token;
 //     MenuUtils(routes, userMenus)
 //     router.addRoutes(routes)
 //     console.log(router)
-//     // window.sessionStorage.removeItem('isLoadNodes')
+//     window.sessionStorage.removeItem('isLoadNodes')
 //   }
 
 
@@ -91,21 +91,14 @@ router.beforeEach((to, from, next) => {
 
     }
 
-    if (userMenus){
-        //这里是防止用户手动刷新页面，整个app要重新加载,动态新增的路由，会消失，所以我们重新add一次
-        let routes = []
-        MenuUtils(routes, userMenus)
-        router.addRoutes(routes)
-        console.log(router)
-        // window.sessionStorage.removeItem('isLoadNodes')
-    }
-
 
     //为每个请求添加请求头
     axios.defaults.headers.common['Authorization'] = token;
     debugger
     
     if (!userMenus && to.path !== '/login') {
+        sessionStorage.removeItem('isLoadNodes')
+        sessionStorage.removeItem('login_user_menus');
         next({path : '/login'})
     }else {
         if (to.path) {
@@ -117,15 +110,6 @@ router.beforeEach((to, from, next) => {
     
 });
 
-function formatUserMenus(userMenus) {
-    for(let i = 0; i < userMenus.length; i++) {
-        let userMenu = userMenus[i];
-        let children = userMenu.children;
-        if (null != children && children.length == 0) {
-            delete userMenus[i].children;
-        }
-    }
-}
 
 new Vue({
     axios,
