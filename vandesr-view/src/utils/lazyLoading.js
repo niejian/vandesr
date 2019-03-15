@@ -1,2 +1,1 @@
-debugger
-export default (name) => () => import(`@/components/page${name}.vue`)
+export default (name) => () => import(`@/components/page/${name}.vue`)

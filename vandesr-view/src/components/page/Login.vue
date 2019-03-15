@@ -29,7 +29,7 @@
     //动态加载路由信息
     import MenuUtils from '@/utils/menuUtil';
 
-    var routers = [];
+    //var routers = [];
 
     export default {
         data: function(){
@@ -38,6 +38,7 @@
                     userName: 'code4fun@qq.com',
                     password: 'qq123123'
                 },
+                routers: [],
                 rules: {
                     username: [
                         { required: true, message: '请输入用户名', trigger: 'blur' }
@@ -112,7 +113,7 @@
             },
             handleLoginRouters(data) {
                 // 登陆成功后处理路由信息
-                MenuUtils(routers, data)
+                MenuUtils(this.routers, data)
             },
             getUserInfo(url, token) {
 
@@ -152,7 +153,7 @@
                             //动态加载路由信息
                             //debugger
                             //动态添加路由信息
-                            //this.handleLoginRouters(userMenus)
+                            this.handleLoginRouters(userMenus)
                             debugger
                             //this.$router.addRoutes(routers)
                             this.$router.push("/")

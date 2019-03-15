@@ -34,6 +34,7 @@
 
 <script>
     import bus from '../common/bus';
+    import MenuUtils from '@/utils/menuUtil'
     export default {
         data() {
             return {
@@ -41,6 +42,7 @@
                 // 构造动态路由菜单信息
                 // 路由节点信息
                 nodes: this.$router.options.routes,
+                //nodes: [],
                 items: [
                     {
                         icon: 'el-icon-lx-home',
@@ -152,7 +154,39 @@
                     }
                 }
                     
+            },
+            addRootChildrens(data) {
+              debugger
+              this.$router.options.routes.forEach(element => {
+                // 只在初始化的时候加载路由信息
+                if (element.path == '/' && element.children &&element.children.length == 1 ) {
+                  debugger
+                  for(let i = 0; i < data.length; i++){
+                    
+                    element.children.push(data[i])
+                  }
+                
                 }
+              });
+            },
+            getUserRouter() {
+              debugger
+              // 获取用户菜单信息
+              let userMenus = sessionStorage.getItem('login_user_menus');
+              if (null != userMenus) {
+                  userMenus = JSON.parse(userMenus);
+                  let routes = []
+                  MenuUtils(routes, userMenus)
+                  console.log("<--------------->")
+                  
+                  //router.addRoutes(routes)
+                  //this.addRootChildrens(routes)
+                  console.log(this.$router.options)
+                  console.log("<--------------->")
+                  window.sessionStorage.removeItem('isLoadNodes')
+
+              }
+            }
             
         },
         created(){
@@ -165,14 +199,14 @@
             let data = JSON.parse(sessionStorage.getItem('login_user_menus'));
             // 是否已经加载路由信息
             let isLoadNodes = sessionStorage.getItem('isLoadNodes')
-            if (data && !isLoadNodes) {
-                debugger
-                this.nodes.push(...data);
+            if (data) {
+                
+                //this.nodes.push(...data);
                 //this.getUniqueRoute(data)
-                this.nodes = Array.from(new Set(this.nodes));
+                //this.getUserRouter()
                 sessionStorage.setItem('isLoadNodes', 'true')
                 console.log('-----加载到的动态路由信息-----');
-			    console.log(this.$router);
+			          console.log(this.$router.options);
             }
         }
     }

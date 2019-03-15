@@ -35,4 +35,8 @@ server:
 logging:
   level:
     root: info
-
+eureka:
+  client:
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://eureka.didispace.com/eureka/

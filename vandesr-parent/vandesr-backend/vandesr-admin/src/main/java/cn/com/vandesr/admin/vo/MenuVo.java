@@ -29,6 +29,7 @@ public class MenuVo implements Serializable {
     private String title;
     private String menuId;
     private String menuCode;
+    private String name;
     private List<MenuVo> children = new ArrayList<>();
     private boolean hasChildren = false;
 
