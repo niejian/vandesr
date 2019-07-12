@@ -1,7 +1,9 @@
 package cn.com.vandesr.backend.config.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,9 +16,11 @@ import java.util.List;
  * @date: 2018/12/18:下午4:07
  */
 @Data
+@ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JwtUser implements UserDetails {
     private String username;
+    @JsonIgnore
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 

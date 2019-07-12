@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import cn.com.vandesr.backend.constInstance.CommonInstance;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -20,10 +21,10 @@ public abstract class JwtTokenUtil implements Serializable {
     /**
      * 密钥
      */
-    private final String secret = "code4fun";
-
-    final static Long TIMESTAMP = 86400000L;
-    final static String TOKEN_PREFIX = "Bearer";
+//    private final String secret = "code4fun";
+//
+//    final static Long TIMESTAMP = 86400000L;
+//    final static String TOKEN_PREFIX = "Bearer";
 
 
     /**
@@ -33,8 +34,8 @@ public abstract class JwtTokenUtil implements Serializable {
      * @return 令牌
      */
     private String generateToken(Map<String, Object> claims) {
-        Date expirationDate = new Date(System.currentTimeMillis() + TIMESTAMP);
-        return TOKEN_PREFIX + " " +Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
+        Date expirationDate = new Date(System.currentTimeMillis() + CommonInstance.TIMESTAMP);
+        return CommonInstance.TOKEN_PREFIX +Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, CommonInstance.secret).compact();
     }
 
     /**
@@ -43,10 +44,10 @@ public abstract class JwtTokenUtil implements Serializable {
      * @param token 令牌
      * @return 数据声明
      */
-    private Claims getClaimsFromToken(String token) {
+    public Claims getClaimsFromToken(String token) {
         Claims claims;
         try {
-            claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            claims = Jwts.parser().setSigningKey(CommonInstance.secret).parseClaimsJws(token).getBody();
         } catch (Exception e) {
             claims = null;
         }
@@ -63,6 +64,8 @@ public abstract class JwtTokenUtil implements Serializable {
         Map<String, Object> claims = new HashMap<>(2);
         claims.put("sub", userDetails.getUsername());
         claims.put("created", new Date());
+        claims.put("auth", userDetails.getAuthorities());
+        claims.put("password", userDetails.getPassword());
         return generateToken(claims);
     }
 

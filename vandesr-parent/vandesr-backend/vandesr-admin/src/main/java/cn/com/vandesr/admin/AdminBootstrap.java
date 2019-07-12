@@ -6,7 +6,10 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.hystrix.EnableHystrix;
+//import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
+//import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -14,12 +17,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @date: 2019/1/24:下午2:35
  */
 @Slf4j
-
-@EnableEurekaClient
+//@EnableKafka
+//@EnableEurekaClient
 @SpringBootApplication
 @EnableTransactionManagement
 @MapperScan("cn.com.vandesr.admin.mapper")
-
+@EnableHystrix
+//@EnableFeignClients
 @ComponentScan({
         "cn.com.vandesr.admin",
         "cn.com.vandesr.backend.config"

@@ -47,8 +47,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private TokenUtil tokenUtil;
-    @Autowired
-    RedisService redisService;
+//    @Autowired
+//    RedisService redisService;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -136,7 +136,7 @@ public class UserController {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 UserDetails userDetails = (UserDetails)authentication.getPrincipal();
                 token = tokenUtil.generateToken(userDetails);
-                redisService.setValue("auth_user_info_" + email, JSONObject.fromObject(userDetails).toString(), 24 * 3600 * 1000L);
+//                redisService.setValue("auth_user_info_" + email, JSONObject.fromObject(userDetails).toString(), 24 * 3600 * 1000L);
                 map.put("token", token);
                 isSuccess = true;
                 responseMsg = "请求成功";

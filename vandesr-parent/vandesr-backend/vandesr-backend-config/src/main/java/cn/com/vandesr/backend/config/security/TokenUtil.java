@@ -1,6 +1,9 @@
 package cn.com.vandesr.backend.config.security;
 
 import cn.com.vandesr.backend.config.service.RedisService;
+import cn.com.vandesr.backend.constInstance.CommonInstance;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.lang.Assert;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import netscape.javascript.JSObject;
@@ -11,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 
 /**
@@ -20,8 +24,8 @@ import java.util.HashSet;
 @Component
 public class TokenUtil extends JwtTokenUtil{
 
-    @Autowired
-    private RedisService redisService;
+//    @Autowired
+//    private RedisService redisService;
 
     /**
      * 从缓存中获取用户信息
@@ -31,14 +35,30 @@ public class TokenUtil extends JwtTokenUtil{
      */
     @Override
     public UserDetails getUserDetails(String token) {
-        String userName = getUsernameFromToken(token);
         try {
-            String userInfo = (String)redisService.getValue("auth_user_info_" + userName, String.class);
+            if (token.startsWith(CommonInstance.TOKEN_PREFIX)) {
+                token = token.replace(CommonInstance.TOKEN_PREFIX, "");
+            }
+            Claims claims = super.getClaimsFromToken(token);
+            Assert.notNull(claims, "非法token");
 
-            JSONObject userObj = JSONObject.fromObject(userInfo);
-            JwtUser jwtUser = this.convertUser(userObj);
+            String loginName = claims.get("sub", String.class);
+            Date created = claims.get("created", Date.class);
+            Collection<? extends GrantedAuthority> authorities = claims.get("auth", Collection.class);
+            String password = claims.get("password", String.class);
+            if (null != loginName && null != password) {
+                JwtUser jwtUser = new JwtUser();
+                jwtUser.setAuthorities(authorities);
+                jwtUser.setPassword(password);
+                jwtUser.setUsername(loginName);
 
-            return jwtUser;
+                return jwtUser;
+
+            } else {
+                return null;
+
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

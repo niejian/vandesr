@@ -41,16 +41,35 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-feign -->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-netflix-feign</artifactId>-->
+<!--            &lt;!&ndash;<version>1.4.0.RELEASE</version>&ndash;&gt;-->
+<!--        </dependency>-->
+
+
+
+
+
+
+
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-eureka -->
         <!--<dependency>-->
             <!--<groupId>org.springframework.cloud</groupId>-->
             <!--<artifactId>spring-cloud-starter-eureka</artifactId>-->
-            <!--<version>1.4.5.RELEASE</version>-->
+            <!--&lt;!&ndash;<version>1.4.5.RELEASE</version>&ndash;&gt;-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+        </dependency>
+
+
 
 
 
