@@ -1,5 +1,7 @@
 package cn.com.vandesr.admin.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.ToString;
@@ -25,7 +27,7 @@ public class DemoUser {
      *   `create_date` datetime(3) DEFAULT NULL,
      *   `update_date` datetime(3) DEFAULT
      */
-
+    @TableId(value = "id", type = IdType.AUTO)
     private String userId;
     private String userName;
     private String userCode;

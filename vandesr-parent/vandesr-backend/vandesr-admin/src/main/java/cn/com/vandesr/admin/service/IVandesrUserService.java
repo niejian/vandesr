@@ -51,6 +51,13 @@ public interface IVandesrUserService extends IService<VandesrUser> {
      */
     List<VandesrRoleMenu> getRoleMenuByRoleIds(List<Integer> roleIdList) throws Exception;
 
+    /**
+     * 获取用户菜单树 getUserMenuByUserId 的优化版本
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    List<MenuVo> getMenuTreeByUserId(Integer userId) throws Exception;
 
     /**
      * 获取用户菜单信息
@@ -58,5 +65,7 @@ public interface IVandesrUserService extends IService<VandesrUser> {
      * @return
      */
     List<MenuVo> getUserMenuByUserId(Integer userId) throws Exception;
+
+
 
 }

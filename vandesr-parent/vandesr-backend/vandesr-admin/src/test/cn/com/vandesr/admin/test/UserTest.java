@@ -77,12 +77,23 @@ public class UserTest {
     }
 
 
-
+    @Ignore
     @Test
     public void getUserMenuTree() throws Exception{
         List<MenuVo> menuVoList = this.vandesrUserService.getUserMenuByUserId(1);
         log.info("==========");
         log.info(JSONArray.fromObject(menuVoList).toString());
+        log.info("==========");
+
+    }
+
+//    @Ignore
+    @Test
+    public void getMenuTreeV2() throws Exception {
+        List<MenuVo> menuVos = this.vandesrUserService.getMenuTreeByUserId(1);
+
+        log.info("==========");
+        log.info(JSONArray.fromObject(menuVos).toString());
         log.info("==========");
 
     }

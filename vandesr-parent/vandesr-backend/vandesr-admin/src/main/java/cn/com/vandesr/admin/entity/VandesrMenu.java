@@ -57,6 +57,8 @@ public class VandesrMenu implements Serializable {
 
     private String updateUserName;
 
+    private boolean leaf;
+
 //    private List<VandesrMenu> subs;
 //
 //    public void addSub(VandesrMenu menu) {

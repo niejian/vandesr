@@ -128,6 +128,145 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
     }
 
     /**
+     * 获取用户菜单树 getUserMenuByUserId 的优化版本
+     * 1. 数据表：role_menu存储的是menuid是叶子节点。
+     * 2.获取该用户的所有角色对应的所有叶子节点信息。
+     * 3.通过叶子节点信息获取到其所有的父节点信息
+     * 4. 从根节点开始往下寻找。判断在不在父节点列表。递归调用知
+     *
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<MenuVo> getMenuTreeByUserId(Integer userId) throws Exception {
+        boolean isContinue = true;
+        // 存放该用户下的所有菜单id
+        Set<Integer> uniqueMenuIdSet = new HashSet<>();
+        // 获取角色信息
+        List<VandesrUserRole> userRoleList = getUserRolesByUserId(userId);
+        List<MenuVo> list = new ArrayList<>();
+        if (CollectionUtils.isEmpty(userRoleList)) {
+            isContinue = false;
+        }
+
+        // 根据角色信息获取对应的菜单信息
+        List<Integer> roleIdList = new ArrayList<>();
+        List<VandesrRoleMenu> roleMenus = new ArrayList<>();
+        if (isContinue) {
+            userRoleList.forEach(userRole -> {
+                roleIdList.add(userRole.getRoleId());
+            });
+            roleMenus = getRoleMenuByRoleIds(roleIdList);
+
+        }
+        List<VandesrMenu> menus = null;
+        if (isContinue && !CollectionUtils.isEmpty(roleMenus)) {
+            menus = this.getMenu(roleMenus);
+        }
+        // 所有父节点id结合
+        Set<String> parentIdSet = new HashSet<>();
+
+        if (null != menus) {
+            for (VandesrMenu menu : menus) {
+                uniqueMenuIdSet.add(menu.getId());
+                String parentIds = menu.getParentIds();
+                // 设置所有父节点信息
+                if (!StringUtils.isEmpty(parentIds)) {
+                    String[] parentIdArr = parentIds.split(",");
+                    parentIdSet.addAll(Arrays.asList(parentIdArr));
+                }
+            }
+
+            list = getMenuTree(uniqueMenuIdSet, parentIdSet);
+        }
+
+        return list;
+    }
+
+    /**
+     * @param uniqueMenuIdSet 用户已经授权的所有菜单Id
+     * @return
+     */
+    private List<MenuVo> getMenuTree(Set<Integer> uniqueMenuIdSet, Set<String> parentIdSet) throws Exception{
+        List<MenuVo> menuTree = new ArrayList<>();
+        // 1. 查找parent_id == null 的节点和非叶子节点 ，
+        QueryWrapper<VandesrMenu> queryWrapper = new QueryWrapper<>();
+        // 查到根节点
+        queryWrapper.eq("delete_flag", 0)
+                .isNull("parent_id");
+        // 得到根节点，循环往下走
+        List<VandesrMenu> list = this.menuService.list(queryWrapper);
+        if (null == list) {
+            return null;
+        }
+
+        for (VandesrMenu menu : list) {
+            List<MenuVo> subMenus = getSubMenu(menu.getId(), uniqueMenuIdSet, parentIdSet);
+            subMenus = subMenus == null ? new ArrayList<>() : subMenus;
+            menuTree.addAll(subMenus);
+        }
+
+        return menuTree;
+
+    }
+
+    /**
+     * 根据父节点id获取到子节点信息
+     * @param parentId
+     * @param uniqueMenuIdSet
+     * @param parentIdSet 父节点结合
+     * @return
+     */
+    private List<MenuVo> getSubMenu(Integer parentId, Set<Integer> uniqueMenuIdSet, Set<String> parentIdSet) throws Exception{
+        List<MenuVo> menuTree = new ArrayList<>();
+        VandesrMenu parentMenu = this.menuService.getById(parentId);
+
+        //
+
+        MenuVo parentMenuVo = menu2MenuVo(parentMenu);
+
+        QueryWrapper<VandesrMenu> queryWrapper = new QueryWrapper<>();
+
+        queryWrapper.eq("delete_flag", 0)
+                .eq("parent_id", parentId)
+        .orderByAsc("id");
+        List<VandesrMenu> list = this.menuService.list(queryWrapper);
+        List<MenuVo> childrenList = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(list)) {
+            for (VandesrMenu menu : list) {
+
+                Integer id = menu.getId();
+
+                MenuVo menuVo = menu2MenuVo(menu);
+
+                // 不是叶子节点, 并且改节点id在所有父节点集合中
+                if (!menu.isLeaf() && parentIdSet.contains(id + "")) {
+                    menuVo.setHasChildren(true);
+                    List<MenuVo> subMenus = getSubMenu(id, uniqueMenuIdSet, parentIdSet);
+                    if (!CollectionUtils.isEmpty(subMenus)) {
+                        // subMenus已经包含了父节点的信息。所以这里只要获取它的children节点
+                        menuVo.setChildren(subMenus.get(0).getChildren());
+                    }
+                    childrenList.add(menuVo);
+
+                } else if (menu.isLeaf() && uniqueMenuIdSet.contains(id)){
+                    // 找到叶子节点信息
+                    menuVo.setHasChildren(false);
+                    childrenList.add(menuVo);
+                }
+
+            }
+            parentMenuVo.setChildren(childrenList);
+        }
+//        parentMenuVo.setChildren(childrenList);
+        menuTree.add(parentMenuVo);
+
+        return menuTree;
+    }
+
+    /**
      * 获取用户菜单信息
      *
      * @param userId
