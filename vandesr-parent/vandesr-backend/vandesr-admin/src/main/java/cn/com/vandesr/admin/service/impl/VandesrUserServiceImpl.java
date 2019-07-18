@@ -456,16 +456,19 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
     }
 
     private MenuVo menu2MenuVo(VandesrMenu menu) throws Exception {
-        MenuVo menuVo = new MenuVo();
+
         String parentId = menu.getParentId() == null ? null : menu.getParentId() + "";
-        menuVo.setParentId(parentId);
-        menuVo.setIcon(menu.getMenuIcon());
-        menuVo.setTitle(menu.getMenuName());
-        menuVo.setName(menu.getMenuName());
-        menuVo.setMenuId(menu.getId() + "");
-        menuVo.setMenuCode(menu.getMenuCode());
-        //路径
-        menuVo.setPath(menu.getMenuUrl());
+        MenuVo menuVo = (MenuVo.builder().parentId(parentId).icon(menu.getMenuIcon())
+                .title(menu.getMenuName()).name(menu.getMenuName()).menuId(menu.getId() + "")
+                .menuCode(menu.getMenuCode()).path(menu.getMenuUrl())).build();
+//        menuVo.setParentId(parentId);
+//        menuVo.setIcon(menu.getMenuIcon());
+//        menuVo.setTitle(menu.getMenuName());
+//        menuVo.setName(menu.getMenuName());
+//        menuVo.setMenuId(menu.getId() + "");
+//        menuVo.setMenuCode(menu.getMenuCode());
+//        //路径
+//        menuVo.setPath(menu.getMenuUrl());
         return menuVo;
     }
 

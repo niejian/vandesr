@@ -1,8 +1,7 @@
 package cn.com.vandesr.admin.vo;
 
 import cn.com.vandesr.admin.entity.VandesrMenu;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,6 +14,9 @@ import java.util.List;
  */
 @Data
 @ToString
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class MenuVo implements Serializable {
 
     /**
