@@ -26,7 +26,7 @@
     import MenuUtils from '@/utils/menuUtils'
     import md5 from 'js-md5'
     import { debuglog } from 'util';
-    import {storeLoginRouters} from '@/utils/utils'
+    import {addSessionData} from '@/utils/storeUtil'
     var routers = []
     export default {
       
@@ -60,7 +60,7 @@
                         password: md5(this.ruleForm.password)
                       })
                       .then(function (response) {
-                        debugger
+                        
                         token = response.data.data.token;
                         menus = response.data.data.menusTree;
                         menuRouters = response.data.data.leafMenus;
@@ -68,19 +68,20 @@
                           this.$message.error(response.data.responseMsg);
                           this.$router.push('/login');
                         }
+                        addSessionData('token', token);
 
                         if(menus && menus.length > 0) {
                           
                           // MenuUtils(routers, menuRouters)
                           // 登陆请求
-                          window.localStorage.setItem('menuTrees',JSON.stringify(menus))
-                          window.localStorage.setItem('menuRouters',JSON.stringify(menuRouters))
+                          addSessionData('menuTrees', JSON.stringify(menus))
+                          addSessionData('menuRouters',JSON.stringify(menuRouters))
 
                           //console.log(menuRouters);
                           // this.$router.addRoutes(routers);
                           // 从缓存中加载路由信息
                           //storeLoginRouters()
-                          localStorage.setItem('ms_username',this.ruleForm.username);
+                          window.sessionStorage.setItem('ms_username',this.ruleForm.username);
                           this.$router.push('/');
                         }       
 

@@ -3,19 +3,20 @@ import router from './router'
 import store from './store'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import {getToken, getMenus} from '@/utils/authUtil'
+import {getSessionData} from '@/utils/storeUtil'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 const whiteList = ['/login', '/dashboard', '/404', '/403'] // no redirect whitelist
+
 router.beforeEach((to, from, next) => {
     NProgress.start()
 
     console.log('from:' + from.fullPath + "--->toPath:" + to.fullPath)
     // user authed routers
-    let menuRouters = localStorage.getItem('menuRouters');
+    let menuRouters = getSessionData('menuRouters');
     let authRouters = [];
     // let routers = [];
-    menuRouters = JSON.parse(menuRouters);
+    //menuRouters = JSON.parse(menuRouters);
     if (menuRouters && menuRouters.length > 0) {
       menuRouters.forEach(data => {
         authRouters.push('/' + data.component)
@@ -29,9 +30,9 @@ router.beforeEach((to, from, next) => {
       }
     }
     
-    const role = localStorage.getItem('ms_username');
+    const user_name = getSessionData('ms_username');
 
-    if (!role && to.path !== '/login') {
+    if (!user_name && to.path !== '/login') {
         next('/login');
         return false
     } else if (to.meta.permission) {

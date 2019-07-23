@@ -11,6 +11,8 @@ import './assets/css/icon.css';
 import './components/common/directives';
 import "babel-polyfill";
 import './permission'; // 权限控制
+import {getSessionData} from '@/utils/storeUtil'
+
 // import MenuUtils from '@/utils/menuUtils'
 // import {storeLoginRouters} from '@/utils/utils'
 
@@ -23,7 +25,15 @@ Vue.use(ElementUI, {
 });
 Vue.prototype.$axios = axios;
 
-axios.defaults.baseURL = 'http://localhost:8088/';
+// get request token 
+let token = getSessionData('token')
+axios.defaults.headers.common['Authorization'] = token;
+let baseURL = 'http://localhost:8088/';
+// production
+if (process.env.NODE_ENV === 'production') {
+
+}
+axios.defaults.baseURL = baseURL;
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 
 const i18n = new VueI18n({
