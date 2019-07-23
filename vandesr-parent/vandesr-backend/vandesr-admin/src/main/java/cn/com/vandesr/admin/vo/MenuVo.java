@@ -27,6 +27,7 @@ public class MenuVo implements Serializable {
 
     private String parentId;
     private String icon;
+    /**vue 相对于 compenents的路径*/
     private String path;
     private String title;
     private String menuId;
@@ -34,7 +35,8 @@ public class MenuVo implements Serializable {
     private String name;
     private List<MenuVo> children = new ArrayList<>();
     private boolean hasChildren = false;
-
+    /**路由路径*/
+    private String routerPath;
 
 
     /**
@@ -44,5 +46,16 @@ public class MenuVo implements Serializable {
     public void addChildrens(MenuVo menuVo) {
         this.children.add(menuVo);
     }
+
+    public void setRouterPath() {
+        int index = this.getPath().lastIndexOf("/");
+        if (index > 0) {
+            this.routerPath = this.getPath().substring(index);
+        } else {
+            this.routerPath = this.getPath();
+        }
+    }
+
+
 
 }

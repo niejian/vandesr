@@ -288,7 +288,11 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
         if (!CollectionUtils.isEmpty(menus)) {
             for (VandesrMenu menu : menus) {
                 if (menu.isLeaf()) {
-                    MenuRouterVo vo = MenuRouterVo.builder().path(menu.getMenuUrl()).title(menu.getMenuName()).build();
+                    MenuRouterVo vo = MenuRouterVo.builder()
+                            .path(menu.getMenuUrl())
+                            .title(menu.getMenuName())
+                            .component(menu.getMenuCode())
+                            .build();
                     list.add(vo);
                 }
 
@@ -503,10 +507,16 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
 
     private MenuVo menu2MenuVo(VandesrMenu menu) throws Exception {
 
+        String path = menu.getMenuUrl();
+        String routerPath = path;
+        if (null != path && path.lastIndexOf("/") > 0) {
+            int index = path.lastIndexOf("/");
+            routerPath = path.substring(index);
+        }
         String parentId = menu.getParentId() == null ? null : menu.getParentId() + "";
         MenuVo menuVo = (MenuVo.builder().parentId(parentId).icon(menu.getMenuIcon())
                 .title(menu.getMenuName()).name(menu.getMenuName()).menuId(menu.getId() + "")
-                .menuCode(menu.getMenuCode()).path(menu.getMenuUrl())).build();
+                .menuCode(menu.getMenuCode()).path(path)).routerPath(routerPath).build();
 //        menuVo.setParentId(parentId);
 //        menuVo.setIcon(menu.getMenuIcon());
 //        menuVo.setTitle(menu.getMenuName());

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.sf.json.JSONObject;
 
 import java.io.Serializable;
 
@@ -18,4 +19,6 @@ import java.io.Serializable;
 public class MenuRouterVo implements Serializable {
     private String path;
     private String title;
+    private String component;
+
 }
