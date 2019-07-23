@@ -3,8 +3,11 @@ package cn.com.vandesr.admin.controller;
 import cn.com.vandesr.admin.entity.VandesrUser;
 import cn.com.vandesr.admin.service.IVandesrUserService;
 import cn.com.vandesr.admin.service.UserService;
+import cn.com.vandesr.admin.vo.MenuRouterVo;
 import cn.com.vandesr.admin.vo.MenuVo;
 import cn.com.vandesr.admin.vo.VandesrUserVo;
+import cn.com.vandesr.backend.common.dto.BaseResponseDto;
+import cn.com.vandesr.backend.common.instance.CommonInstance;
 import cn.com.vandesr.backend.config.aop.LogAspect;
 import cn.com.vandesr.backend.config.exception.AccountNotFountException;
 import cn.com.vandesr.backend.config.security.JwtUser;
@@ -100,8 +103,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/login")
-    public Map<String, Object> login(@RequestBody JSONObject jsonObject) {
-        Map<String, Object> map = new HashMap<>(6);
+    public BaseResponseDto<Map<String, Object>> login(@RequestBody JSONObject jsonObject) {
+        Map<String, Object> map = new HashMap<>(2);
+        BaseResponseDto<Map<String, Object>> responseDto = new BaseResponseDto<>();
         String token = "";
         Boolean isSuccess = false;
         String responseMsg = "请求失败";
@@ -122,9 +126,9 @@ public class UserController {
                 responseMsg = "密码不能为空";
                 isContinue = false;
             }
-
+            VandesrUser user = null;
             if (isContinue) {
-                VandesrUser user = getUserByLoginAccount(email);
+                user = getUserByLoginAccount(email);
                 if (null == user) {
                     throw new AccountNotFountException("登陆账号不存在");
                 }
@@ -136,11 +140,24 @@ public class UserController {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 UserDetails userDetails = (UserDetails)authentication.getPrincipal();
                 token = tokenUtil.generateToken(userDetails);
-//                redisService.setValue("auth_user_info_" + email, JSONObject.fromObject(userDetails).toString(), 24 * 3600 * 1000L);
                 map.put("token", token);
-                isSuccess = true;
-                responseMsg = "请求成功";
-                responseCode = 0;
+                // 获取菜单信息
+                List<MenuVo> menuVoList = this.vandesrUserService.getMenuTreeByUserId(user.getId());
+                if (menuVoList == null) {
+                    menuVoList = new ArrayList<>();
+                }
+                // 前端需要菜单树作为构建侧边的数据基础
+                map.put("menusTree", menuVoList);
+                // 所有的叶子节点作为路由
+                List<MenuRouterVo> leafMenus = this.vandesrUserService.getLeafMenuByUserId(user.getId());
+                if (null == leafMenus) {
+                    leafMenus = new ArrayList<>();
+                }
+                map.put("leafMenus", leafMenus);
+
+                responseMsg = CommonInstance.SUCCESS_MSG;
+                responseCode = CommonInstance.SUCCESS_CODE;
+                isSuccess = CommonInstance.SUCCESS;
             }
 
 
@@ -157,10 +174,8 @@ public class UserController {
 
         }
 
-        map.put("responseMsg", responseMsg);
-        map.put("isSuccess", isSuccess);
-        map.put("responseCode", responseCode);
-        return map;
+
+        return  responseDto.success(isSuccess).responCode(responseCode).responseMsg(responseMsg).data(map);
 
     }
 

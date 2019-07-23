@@ -3,6 +3,7 @@ package cn.com.vandesr.admin.service;
 import cn.com.vandesr.admin.entity.VandesrRoleMenu;
 import cn.com.vandesr.admin.entity.VandesrUser;
 import cn.com.vandesr.admin.entity.VandesrUserRole;
+import cn.com.vandesr.admin.vo.MenuRouterVo;
 import cn.com.vandesr.admin.vo.MenuVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -65,6 +66,14 @@ public interface IVandesrUserService extends IService<VandesrUser> {
      * @return
      */
     List<MenuVo> getUserMenuByUserId(Integer userId) throws Exception;
+
+    /**
+     * 获取该用户的所有叶子信息（构建菜单路由）
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    List<MenuRouterVo> getLeafMenuByUserId(Integer userId) throws Exception;
 
 
 

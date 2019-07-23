@@ -6,6 +6,7 @@ import cn.com.vandesr.admin.entity.VandesrUser;
 import cn.com.vandesr.admin.entity.VandesrUserRole;
 import cn.com.vandesr.admin.mapper.VandesrUserMapper;
 import cn.com.vandesr.admin.service.*;
+import cn.com.vandesr.admin.vo.MenuRouterVo;
 import cn.com.vandesr.admin.vo.MenuVo;
 import cn.com.vandesr.backend.config.utils.SnowflakeIdWorker;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -181,7 +182,13 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
             list = getMenuTree(uniqueMenuIdSet, parentIdSet);
         }
 
-        return list;
+        if (!CollectionUtils.isEmpty(list)) {
+            return list.get(0).getChildren();
+        } else {
+            return list;
+        }
+
+//        return list.get(0).getChildren();
     }
 
     /**
@@ -225,6 +232,7 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
         //
 
         MenuVo parentMenuVo = menu2MenuVo(parentMenu);
+        parentMenuVo.setHasChildren(true);
 
         QueryWrapper<VandesrMenu> queryWrapper = new QueryWrapper<>();
 
@@ -267,16 +275,43 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
     }
 
     /**
-     * 获取用户菜单信息
+     * 获取该用户的所有叶子信息（构建菜单路由）
      *
      * @param userId
      * @return
+     * @throws Exception
      */
     @Override
-    public List<MenuVo> getUserMenuByUserId(Integer userId) throws Exception{
+    public List<MenuRouterVo> getLeafMenuByUserId(Integer userId) throws Exception {
+        List<VandesrMenu> menus = this.getMenuByUserId(userId);
+        List<MenuRouterVo> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(menus)) {
+            for (VandesrMenu menu : menus) {
+                if (menu.isLeaf()) {
+                    MenuRouterVo vo = MenuRouterVo.builder()
+                            .path(menu.getMenuUrl())
+                            .title(menu.getMenuName())
+                            .component(menu.getMenuCode())
+                            .build();
+                    list.add(vo);
+                }
+
+            }
+
+        }
+        return list;
+    }
+
+    /**
+     * 获取指定用户的菜单信息
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    private List<VandesrMenu> getMenuByUserId(Integer userId) throws Exception {
+        List<VandesrMenu> userMenus = new ArrayList<>();
         boolean isContinue = true;
         List<VandesrUserRole> userRoleList = getUserRolesByUserId(userId);
-        List<MenuVo> list = new ArrayList<>();
         if (CollectionUtils.isEmpty(userRoleList)) {
             isContinue = false;
         }
@@ -290,7 +325,22 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
             roleMenus = getRoleMenuByRoleIds(roleIdList);
         }
 
-        List<VandesrMenu> menus = this.getMenu(roleMenus);
+        userMenus = this.getMenu(roleMenus);
+
+        return userMenus;
+    }
+
+    /**
+     * 获取用户菜单信息
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<MenuVo> getUserMenuByUserId(Integer userId) throws Exception{
+        List<MenuVo> list = new ArrayList<>();
+        List<VandesrMenu> menus = this.getMenuByUserId(userId);
+        Boolean isContinue = true;
         if (CollectionUtils.isEmpty(menus)) {
             isContinue = false;
         }
@@ -456,16 +506,25 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
     }
 
     private MenuVo menu2MenuVo(VandesrMenu menu) throws Exception {
-        MenuVo menuVo = new MenuVo();
+
+        String path = menu.getMenuUrl();
+        String routerPath = path;
+        if (null != path && path.lastIndexOf("/") > 0) {
+            int index = path.lastIndexOf("/");
+            routerPath = path.substring(index);
+        }
         String parentId = menu.getParentId() == null ? null : menu.getParentId() + "";
-        menuVo.setParentId(parentId);
-        menuVo.setIcon(menu.getMenuIcon());
-        menuVo.setTitle(menu.getMenuName());
-        menuVo.setName(menu.getMenuName());
-        menuVo.setMenuId(menu.getId() + "");
-        menuVo.setMenuCode(menu.getMenuCode());
-        //路径
-        menuVo.setPath(menu.getMenuUrl());
+        MenuVo menuVo = (MenuVo.builder().parentId(parentId).icon(menu.getMenuIcon())
+                .title(menu.getMenuName()).name(menu.getMenuName()).menuId(menu.getId() + "")
+                .menuCode(menu.getMenuCode()).path(path)).routerPath(routerPath).build();
+//        menuVo.setParentId(parentId);
+//        menuVo.setIcon(menu.getMenuIcon());
+//        menuVo.setTitle(menu.getMenuName());
+//        menuVo.setName(menu.getMenuName());
+//        menuVo.setMenuId(menu.getId() + "");
+//        menuVo.setMenuCode(menu.getMenuCode());
+//        //路径
+//        menuVo.setPath(menu.getMenuUrl());
         return menuVo;
     }
 
