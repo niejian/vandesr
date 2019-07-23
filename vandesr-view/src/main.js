@@ -1,105 +1,92 @@
-import Vue from 'vue';
-import App from './App';
-import router from './router';
+import Vue from 'vue'
+import App from './App.vue'
+import router from './router'
 import axios from 'axios';
 import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';    // 默认主题
+import VueI18n from 'vue-i18n';
+import { messages } from './components/common/i18n';
+import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
 // import '../static/css/theme-green/index.css';       // 浅绿色主题
-import '../static/css/icon.css';
+import './assets/css/icon.css';
 import './components/common/directives';
-//import "babel-polyfill";
-import store from '@/store/index'
-import {isEmptyArr} from '@/lib/commonFunction'
-import isNullStr from './lib/commonFunction'
-//动态加载路由信息
-import MenuUtils from '@/utils/menuUtil'
+import "babel-polyfill";
+import './permission'; // 权限控制
+// import MenuUtils from '@/utils/menuUtils'
+// import {storeLoginRouters} from '@/utils/utils'
 
+import store from './store'
 
-Vue.use(ElementUI, { size: 'small' });
-
+Vue.config.productionTip = false
+Vue.use(VueI18n);
+Vue.use(ElementUI, {
+    size: 'small'
+});
 Vue.prototype.$axios = axios;
 
-//定义全局访问url
-if(process.env.NODE_ENV === 'development'){
-    //开发环境
-    Vue.prototype.URL_PREFIX = 'http://localhost:8088'
-}
+axios.defaults.baseURL = 'http://localhost:8088/';
+// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+
+const i18n = new VueI18n({
+    locale: 'zh',
+    messages
+})
 
 
-let loginAccount = sessionStorage.getItem('login_account');
+// MenuUtils(routers, menuRouters)
+// debugger
+// router.addRoutes(routers);
+// 从缓存中加载路由信息
+//storeLoginRouters()
 
-let token = sessionStorage.getItem(loginAccount + '_token_key');
-
-//为每个请求添加请求头
-axios.defaults.headers.common['Authorization'] = token;
-
-
-getUserRouter();
-
-router.beforeEach((to, from, next) => {
-    let token = sessionStorage.getItem(loginAccount + '_token_key');
-    console.log('token --->' + token);
-
-    let userMenus = sessionStorage.getItem('login_user_menus');
-    if (null != userMenus) {
-        userMenus = JSON.parse(userMenus);
-
-    }
-
-
-    //为每个请求添加请求头
-    axios.defaults.headers.common['Authorization'] = token;
-    debugger
+// router.options.routes.push(routers)
+// const whiteList = ['/login', '/dashboard', '/404', '/403']
+// console.log(router.options.routes)
+//使用钩子函数对路由进行权限跳转
+// router.beforeEach((to, from, next) => {
+//     console.log('from:' + from.fullPath + "--->toPath:" + to.fullPath)
+//     // user authed routers
+//     let menuRouters = localStorage.getItem('menuRouters');
+//     let authRouters = [];
+//     // let routers = [];
+//     menuRouters = JSON.parse(menuRouters);
+//     if (menuRouters && menuRouters.length > 0) {
+//       menuRouters.forEach(data => {
+//         authRouters.push('/' + data.component)
+//       })
+//     }
+//     debugger
+//     if (!whiteList.includes(to.path)) {
+//       if (!authRouters || authRouters <= 0 || !authRouters.includes(to.path)) {
+//         next({'path': '/403'})
+//         //return false
+//       }
+//     }
     
-    if (!userMenus && to.path !== '/login') {
-        sessionStorage.removeItem('isLoadNodes')
-        sessionStorage.removeItem('login_user_menus');
-        next({path : '/login'})
-    }else {
-        if (to.path) {
-            next()
-          } else {
-            next({ path: '/nofound' })
-          }
-    }
-    
-});
+//     const role = localStorage.getItem('ms_username');
 
-function addRootChildrens(router, data) {
-  router.options.routes.forEach(element => {
-    if (element.path == '/' && element.children &&element.children.length == 1) {
-      debugger
-      for(let i = 0; i < data.length; i++){
-        element.children.push(data[i])
-      }
-     
-    }
-  });
-}
-
-function getUserRouter() {
-  // 获取用户菜单信息
-  let userMenus = sessionStorage.getItem('login_user_menus');
-  if (null != userMenus) {
-      userMenus = JSON.parse(userMenus);
-      let routes = []
-      MenuUtils(routes, userMenus)
-      console.log("<--------------->")
-      console.log(routes)
-      debugger
-      //router.addRoutes(routes)
-      addRootChildrens(router, routes)
-      console.log(router.options)
-      console.log("<--------------->")
-      window.sessionStorage.removeItem('isLoadNodes')
-
-  }
-}
+//     if (!role && to.path !== '/login') {
+//         next('/login');
+//         return false
+//     } else if (to.meta.permission) {
+//         // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
+//         role === 'admin' ? next() : next('/403');
+//     } else {
+//         // 简单的判断IE10及以下不进入富文本编辑器，该组件不兼容
+//         if (navigator.userAgent.indexOf('MSIE') > -1 && to.path === '/editor') {
+//             Vue.prototype.$alert('vue-quill-editor组件不兼容IE10及以下浏览器，请使用更高版本的浏览器查看', '浏览器不兼容通知', {
+//                 confirmButtonText: '确定'
+//             });
+//         } else {
+//             next();
+//         }
+//     }
+// })
 
 
 new Vue({
-    axios,
     router,
     store,
+    i18n,
+    axios,
     render: h => h(App)
-}).$mount('#app');
+}).$mount('#app')

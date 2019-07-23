@@ -23,22 +23,20 @@
 </template>
 
 <script>
+    import MenuUtils from '@/utils/menuUtils'
     import md5 from 'js-md5'
-    import httpPost from '@/lib/http';
-    import storage from '@/lib/storage';
-    //动态加载路由信息
-    import MenuUtils from '@/utils/menuUtil';
-
-    //var routers = [];
-
+    import { debuglog } from 'util';
+    import {storeLoginRouters} from '@/utils/utils'
+    var routers = []
     export default {
+      
         data: function(){
+          
             return {
                 ruleForm: {
-                    userName: 'code4fun@qq.com',
+                    username: 'code4fun@qq.com',
                     password: 'qq123123'
                 },
-                routers: [],
                 rules: {
                     username: [
                         { required: true, message: '请输入用户名', trigger: 'blur' }
@@ -52,123 +50,53 @@
         methods: {
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
+                  let menus = [];
+                  let token = '';
+                  let menuRouters = [];
                     if (valid) {
-                        let baseUrl = `${this.URL_PREFIX}`;
-                        
-                        let url = baseUrl + '/user/login';
-                        let requestData = {
-                                'email': this.ruleForm.username,
-                                //'password': md5(this.ruleForm.password)
-                                'password': this.ruleForm.password
-                            };
+                      // 使用axios必须在success，error后加上bind(this)不然会报错
+                      this.$axios.post('http://localhost:8088/user/login', {
+                        email: this.ruleForm.username,
+                        password: md5(this.ruleForm.password)
+                      })
+                      .then(function (response) {
+                        debugger
+                        token = response.data.data.token;
+                        menus = response.data.data.menusTree;
+                        menuRouters = response.data.data.leafMenus;
+                        if(!token) {
+                          this.$message.error(response.data.responseMsg);
+                          this.$router.push('/login');
+                        }
 
-                        this.$axios.post(
-                            url,
-                            requestData
-                        ).then(res => {
-                            
-                            debugger
-                            let responseData = res.data;
-                            let isSuccess = responseData.isSuccess;
-                            let responseCode = responseData.responseCode;
-                            if(isSuccess && 0 == responseCode){
+                        if(menus && menus.length > 0) {
+                          
+                          // MenuUtils(routers, menuRouters)
+                          // 登陆请求
+                          window.localStorage.setItem('menuTrees',JSON.stringify(menus))
+                          window.localStorage.setItem('menuRouters',JSON.stringify(menuRouters))
 
-                                //登陆成功
-                                this.$message({
-                                    type: 'success',
-                                    message: '登陆成功',
-                                    duration: 1000
-                                })
-                                let token = responseData.token;
-                                //
-                                this.$store.commit('setToken', token);
-                                this.$store.commit('setLoginAccount', this.ruleForm.username)
-                                storage.setItem('login_account', this.ruleForm.username);
-                                storage.setItem(this.ruleForm.username + "_token_key", token);
-                                debugger
-                                //获取用户权限
-                                this.getUserInfo(baseUrl + "/user/getUserInfo", token)
-                                
-                            }else {
-                                //登陆失败
-                                this.$message({
-                                    type: 'error',
-                                    duration: 1000,
-                                    message: responseData.responseMsg
-                                })
-                            }
-                        }).catch(err => {
-                            this.$message({
-                                type: 'error',
-                                message: '登陆失败，请重试！'
-                            })
-                        })
-                        
-                    
+                          //console.log(menuRouters);
+                          // this.$router.addRoutes(routers);
+                          // 从缓存中加载路由信息
+                          //storeLoginRouters()
+                          localStorage.setItem('ms_username',this.ruleForm.username);
+                          this.$router.push('/');
+                        }       
+
+                      }.bind(this))
+                      .catch(function (error) {
+                        console.log(error);
+                      }.bind(this));
+                      
                     } else {
                         console.log('error submit!!');
                         return false;
                     }
                 });
-            },
-            handleLoginRouters(data) {
-                // 登陆成功后处理路由信息
-                MenuUtils(this.routers, data)
-            },
-            getUserInfo(url, token) {
-
-                this.$axios({
-                        url: url,
-                        method: 'post',
-                        headers: {
-                            Authorization: token
-                        }
-                    }
-                ).then(res => {
-                    debugger
-                    let responseData = res.data;
-                    let isSuccess = responseData.success;
-                    let responseCode = responseData.responseCode;
-
-                    if (isSuccess && 0 == responseCode){
-                        let data = responseData.data;
-                        if(null != data){
-                            debugger
-                            //let user = data.user;
-                            let roles = data.roles;
-
-                            let email = data.email;
-                            let avatar = data.avatar;
-                            let userName = data.userName;
-                            // 用户菜单信息
-                            let userMenus = data.userMenus;
-
-
-                            sessionStorage.setItem('login_user_name', userName);
-                            sessionStorage.setItem('login_user_account', email);
-                            sessionStorage.setItem('login_user_avatar', avatar);
-                            sessionStorage.setItem('login_user_roles', JSON.stringify(roles));
-                            sessionStorage.setItem('login_user_menus', JSON.stringify(userMenus));
-
-                            //动态加载路由信息
-                            //debugger
-                            //动态添加路由信息
-                            this.handleLoginRouters(userMenus)
-                            debugger
-                            //this.$router.addRoutes(routers)
-                            this.$router.push("/")
-                            
-                        }
-                    }
-
-                }).catch(err => {
-                    console.log(err)
-                })
             }
         }
     }
-
-    
 </script>
 
 <style scoped>
@@ -176,7 +104,7 @@
         position: relative;
         width:100%;
         height:100%;
-        background-image: url(../../assets/login-bg.jpg);
+        background-image: url(../../assets/img/login-bg.jpg);
         background-size: 100%;
     }
     .ms-title{

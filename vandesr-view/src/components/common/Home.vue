@@ -2,9 +2,9 @@
     <div class="wrapper">
         <v-head></v-head>
         <v-sidebar></v-sidebar>
+        
         <div class="content-box" :class="{'content-collapse':collapse}">
-            <!-- 页签信息 -->
-            <vTags></vTags>
+            <v-tags></v-tags>
             <div class="content">
                 <transition name="move" mode="out-in">
                     <keep-alive :include="tagsList">
@@ -21,21 +21,22 @@
     import vSidebar from './Sidebar.vue';
     import vTags from './Tags.vue';
     import bus from './bus';
+    import {storeLoginRouters} from '@/utils/utils'
+
     export default {
         data(){
             return {
                 tagsList: [],
-                collapse: false,
-                // 路由节点信息
-                nodes: this.$router.options.routes
+                collapse: false
             }
         },
         components:{
             vHead, vSidebar, vTags
         },
         created(){
+            console.log("home")
+          
             bus.$on('collapse', msg => {
-                
                 this.collapse = msg;
             })
 
@@ -46,14 +47,7 @@
                     msg[i].name && arr.push(msg[i].name);
                 }
                 this.tagsList = arr;
-            });
-
-            // 加载动态路由信息
-            let data = JSON.parse(sessionStorage.getItem('login_user_menus'));
-            if (data) {
-                this.nodes.push(...data);
-			    console.log(this.nodes);
-            }
+            })
         }
     }
 </script>

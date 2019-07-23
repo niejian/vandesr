@@ -16,14 +16,14 @@
                 <!-- 消息中心 -->
                 <div class="btn-bell">
                     <el-tooltip effect="dark" :content="message?`有${message}条未读消息`:`消息中心`" placement="bottom">
-                        <router-link to="/tabs">
+                        <router-link to="/form">
                             <i class="el-icon-bell"></i>
                         </router-link>
                     </el-tooltip>
                     <span class="btn-bell-badge" v-if="message"></span>
                 </div>
                 <!-- 用户头像 -->
-                <div class="user-avator"><img :src="avatar"></div>
+                <div class="user-avator"><img src="../../assets/img/img.jpg"></div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
@@ -48,31 +48,23 @@
     export default {
         data() {
             return {
-               
                 collapse: false,
                 fullscreen: false,
                 name: 'linxin',
                 message: 2
-    
             }
         },
         computed:{
             username(){
-                return this.$store.getters.getUserName 
-            },
-             avatar(){
-                return this.$store.getters.getAvatar
-             } 
+                let username = localStorage.getItem('ms_username');
+                return username ? username : this.name;
+            }
         },
         methods:{
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
-                    //localStorage.removeItem('ms_username')
-                    sessionStorage.clear();
-                    //清空router信息
-                    this.$router.options.routes = [];
-                    console.log(this.$router)
+                    localStorage.removeItem('ms_username')
                     this.$router.push('/login');
                 }
             },
@@ -113,7 +105,6 @@
             if(document.body.clientWidth < 1500){
                 this.collapseChage();
             }
-
         }
     }
 </script>

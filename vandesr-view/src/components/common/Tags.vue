@@ -68,7 +68,8 @@
                     this.tagsList.push({
                         title: route.meta.title,
                         path: route.fullPath,
-                        name: route.matched[1].components.default.name
+                        // name: route.matched[1].components.default.name
+                        name: route.name
                     })
                 }
                 bus.$emit('tags', this.tagsList);
@@ -89,6 +90,23 @@
         },
         created(){
             this.setTags(this.$route);
+            // 监听关闭当前页面的标签页
+            bus.$on('close_current_tags', () => {
+                for (let i = 0, len = this.tagsList.length; i < len; i++) {
+                    const item = this.tagsList[i];
+                    if(item.path === this.$route.fullPath){
+                        if(i < len - 1){
+                            this.$router.push(this.tagsList[i+1].path);
+                        }else if(i > 0){
+                            this.$router.push(this.tagsList[i-1].path);
+                        }else{
+                            this.$router.push('/');
+                        }
+                        this.tagsList.splice(i, 1);
+                        break;
+                    }
+                }
+            })
         }
     }
 
