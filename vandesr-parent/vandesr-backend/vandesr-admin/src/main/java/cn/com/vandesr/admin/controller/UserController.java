@@ -102,6 +102,7 @@ public class UserController {
         return response;
     }
 
+    @LogAspect
     @PostMapping(value = "/login")
     public BaseResponseDto<Map<String, Object>> login(@RequestBody JSONObject jsonObject) {
         Map<String, Object> map = new HashMap<>(2);
@@ -154,6 +155,9 @@ public class UserController {
                     leafMenus = new ArrayList<>();
                 }
                 map.put("leafMenus", leafMenus);
+
+                // 返回用户信息
+                map.put("user", user);
 
                 responseMsg = CommonInstance.SUCCESS_MSG;
                 responseCode = CommonInstance.SUCCESS_CODE;

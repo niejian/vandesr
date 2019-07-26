@@ -81,7 +81,7 @@
                           // this.$router.addRoutes(routers);
                           // 从缓存中加载路由信息
                           //storeLoginRouters()
-                          window.sessionStorage.setItem('ms_username',this.ruleForm.username);
+                          addSessionData('ms_username',this.ruleForm.username);
                           this.$router.push('/');
                         }       
 
