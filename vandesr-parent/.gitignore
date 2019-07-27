@@ -12,7 +12,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 .idea/
-./*.iml
+vandesr-parent.iml
+*/*.iml
+*/*/*.iml
 target/
 # Package Files #
 *.jar
