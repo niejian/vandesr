@@ -16,43 +16,48 @@ export default new Router({
           meta: { title: '自述文件' },
           title: '自述文件',
           children: [
-            {
-                path: '/dashboard',
-                component: resolve => require(['../components/page/Dashboard.vue'], resolve),
-                meta: { title: '系统首页' },
-                title: '系统首页'
-            },
-            
-            {
-                path: '/404',
-                component: resolve => require(['../components/page/404.vue'], resolve),
-                title: '404',
-                meta: { title: '404' }
-            },
-            {
-                path: '/403',
-                component: resolve => require(['../components/page/403.vue'], resolve),
-                title: '403',
-                meta: { title: '403' }
-            },
-            {
-                path: '/form',
+              {
+                  path: '/dashboard',
+                  component: resolve => require(['../components/page/Dashboard.vue'], resolve),
+                  meta: { title: '系统首页' },
+                  title: '系统首页'
+              },
+              
+              {
+                  path: '/404',
+                  component: resolve => require(['../components/page/404.vue'], resolve),
+                  title: '404',
+                  meta: { title: '404' }
+              },
+              {
+                  path: '/403',
+                  component: resolve => require(['../components/page/403.vue'], resolve),
+                  title: '403',
+                  meta: { title: '403' }
+              },
+              {
+                  path: '/form',
+                  component: resolve => require(['../components/page/form.vue'], resolve),
+                  title: 'form',
+                  meta: { title: 'form' }
+              },
+              {
+                path: '/forms',
                 component: resolve => require(['../components/page/form.vue'], resolve),
-                title: 'form',
-                meta: { title: 'form' }
+                title: 'forms',
+                meta: { title: 'forms' }
             },
-            {
-              path: '/forms',
-              component: resolve => require(['../components/page/form.vue'], resolve),
-              title: 'forms',
-              meta: { title: 'forms' }
-          },
-            {
-              path: '/Icon',
-              component: resolve => require(['../components/page/Icon.vue'], resolve),
-              title: '自定义图标',
-              meta: { title: '自定义图标' }
-          }
+              {
+                path: '/Icon',
+                component: resolve => require(['../components/page/Icon.vue'], resolve),
+                title: '自定义图标',
+                meta: { title: '自定义图标' }
+            },{
+              path: '/role',
+              component: resolve => require(['@/components/page/user/Role.vue'], resolve),
+              title: '角色管理',
+              meta: {title: '角色管理'}
+            }
           ]
         },
         // {

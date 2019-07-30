@@ -30,6 +30,10 @@ public class VandesrRoleMenu implements Serializable {
 
     private Integer menuId;
 
+    private String menuCode;
+
+    private String menuName;
+
     private Integer deleteFlag;
 
     private Date createDate;
