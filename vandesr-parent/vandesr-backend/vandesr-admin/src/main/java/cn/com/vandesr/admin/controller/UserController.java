@@ -16,6 +16,7 @@ import cn.com.vandesr.backend.config.service.RedisService;
 import cn.com.vandesr.backend.config.web.BaseResponse;
 import cn.com.vandesr.backend.config.web.BaseResponseExt;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ import java.util.*;
  * @author: nj
  * @date: 2019/1/24:下午2:32
  */
+@Slf4j
 @CrossOrigin
 @RestController
 @RequestMapping("/user")
@@ -102,7 +104,7 @@ public class UserController {
         return response;
     }
 
-    @LogAspect
+//    @LogAspect
     @PostMapping(value = "/login")
     public BaseResponseDto<Map<String, Object>> login(@RequestBody JSONObject jsonObject) {
         Map<String, Object> map = new HashMap<>(2);

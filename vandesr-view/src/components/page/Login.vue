@@ -25,8 +25,8 @@
 <script>
     import MenuUtils from '@/utils/menuUtils'
     import md5 from 'js-md5'
-    import { debuglog } from 'util';
     import {addSessionData} from '@/utils/storeUtil'
+    import {login} from  '@/api/user'
     var routers = []
     export default {
       
@@ -54,41 +54,72 @@
                   let token = '';
                   let menuRouters = [];
                     if (valid) {
+                      login({
+                        'email': this.ruleForm.username,
+                        'password': md5(this.ruleForm.password)
+                       }).then(response => {
+                         
+                         token = response.data.token;
+                          menus = response.data.menusTree;
+                          menuRouters = response.data.leafMenus;
+                          if(!token) {
+                            // this.$message.error(response.data.responseMsg);
+                            this.$message({
+                              type: 'error',
+                              showClose: true,
+                              message: response.responseMsg
+                            })
+                            this.$router.push('/login');
+                          }
+                          addSessionData('token', token);
+
+                          if(menus && menus.length > 0) {
+                            
+                            // 登陆请求
+                            addSessionData('menuTrees', JSON.stringify(menus))
+                            addSessionData('menuRouters',JSON.stringify(menuRouters))
+                            addSessionData('ms_username',this.ruleForm.username);
+                            this.$router.push('/');
+                          }
+                       })
+
+
+                      
                       // 使用axios必须在success，error后加上bind(this)不然会报错
-                      this.$axios.post('http://localhost:8088/user/login', {
-                        email: this.ruleForm.username,
-                        password: md5(this.ruleForm.password)
-                      })
-                      .then(function (response) {
-                        
-                        token = response.data.data.token;
-                        menus = response.data.data.menusTree;
-                        menuRouters = response.data.data.leafMenus;
-                        if(!token) {
-                          this.$message.error(response.data.responseMsg);
-                          this.$router.push('/login');
-                        }
-                        addSessionData('token', token);
+                      // this.$post('http://localhost:8088/user/login', {
+                      //   email: this.ruleForm.username,
+                      //   password: md5(this.ruleForm.password)
+                      // })
+                      // .then(function (response) {
+                      //   debugger
+                      //   token = response.data.data.token;
+                      //   menus = response.data.data.menusTree;
+                      //   menuRouters = response.data.data.leafMenus;
+                      //   if(!token) {
+                      //     this.$message.error(response.data.responseMsg);
+                      //     this.$router.push('/login');
+                      //   }
+                      //   addSessionData('token', token);
 
-                        if(menus && menus.length > 0) {
+                      //   if(menus && menus.length > 0) {
                           
-                          // MenuUtils(routers, menuRouters)
-                          // 登陆请求
-                          addSessionData('menuTrees', JSON.stringify(menus))
-                          addSessionData('menuRouters',JSON.stringify(menuRouters))
+                      //     // MenuUtils(routers, menuRouters)
+                      //     // 登陆请求
+                      //     addSessionData('menuTrees', JSON.stringify(menus))
+                      //     addSessionData('menuRouters',JSON.stringify(menuRouters))
 
-                          //console.log(menuRouters);
-                          // this.$router.addRoutes(routers);
-                          // 从缓存中加载路由信息
-                          //storeLoginRouters()
-                          addSessionData('ms_username',this.ruleForm.username);
-                          this.$router.push('/');
-                        }       
+                      //     //console.log(menuRouters);
+                      //     // this.$router.addRoutes(routers);
+                      //     // 从缓存中加载路由信息
+                      //     //storeLoginRouters()
+                      //     addSessionData('ms_username',this.ruleForm.username);
+                      //     this.$router.push('/');
+                      //   }       
 
-                      }.bind(this))
-                      .catch(function (error) {
-                        console.log(error);
-                      }.bind(this));
+                      // }.bind(this))
+                      // .catch(function (error) {
+                      //   console.log(error);
+                      // }.bind(this));
                       
                     } else {
                         console.log('error submit!!');

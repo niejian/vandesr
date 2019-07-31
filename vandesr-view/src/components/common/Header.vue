@@ -50,13 +50,14 @@
             return {
                 collapse: false,
                 fullscreen: false,
-                name: 'linxin',
+                name: '',
                 message: 2
             }
         },
         computed:{
             username(){
                 let username = localStorage.getItem('ms_username');
+                this.name = username;
                 return username ? username : this.name;
             }
         },
@@ -64,7 +65,7 @@
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
+                    sessionStorage.clear();
                     this.$router.push('/login');
                 }
             },

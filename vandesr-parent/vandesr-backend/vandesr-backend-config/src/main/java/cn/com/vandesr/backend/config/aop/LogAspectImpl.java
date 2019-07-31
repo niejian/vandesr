@@ -75,12 +75,12 @@ public class LogAspectImpl {
 
     @Around(value = "logAspect()")
     public void logAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        log.info("---->start");
-        Object[] requestArgs = proceedingJoinPoint.getArgs();
-        CommonFunction.beforeProcess(log, requestArgs);
-        proceedingJoinPoint.proceed();
-        Object[] responseArgs = proceedingJoinPoint.getArgs();
-        CommonFunction.beforeProcess(log, responseArgs);
+//        log.info("---->start");
+//        Object[] requestArgs = proceedingJoinPoint.getArgs();
+//        CommonFunction.beforeProcess(log, requestArgs);
+//        proceedingJoinPoint.proceed();
+//        Object[] responseArgs = proceedingJoinPoint.getArgs();
+//        CommonFunction.beforeProcess(log, responseArgs);
 
     }
 }

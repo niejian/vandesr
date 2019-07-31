@@ -13,9 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * @author: nj
@@ -44,7 +42,20 @@ public class TokenUtil extends JwtTokenUtil{
 
             String loginName = claims.get("sub", String.class);
             Date created = claims.get("created", Date.class);
-            Collection<? extends GrantedAuthority> authorities = claims.get("auth", Collection.class);
+            Collection auths = claims.get("auth", Collection.class);
+            Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+
+            if (null != auths && auths.size() > 0) {
+                Iterator iterator = auths.iterator();
+                while (iterator.hasNext()) {
+                    LinkedHashMap role = (LinkedHashMap)iterator.next();
+                    authorities.add(new SimpleGrantedAuthority((String)role.get("authority")));
+                }
+
+
+
+            }
+//            Collection<? extends GrantedAuthority> authorities = claims.get("auth", Collection.class);
             String password = claims.get("password", String.class);
             if (null != loginName && null != password) {
                 JwtUser jwtUser = new JwtUser();

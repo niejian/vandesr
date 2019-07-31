@@ -12,6 +12,8 @@ import './components/common/directives';
 import "babel-polyfill";
 import './permission'; // 权限控制
 import {getSessionData} from '@/utils/storeUtil'
+import {post, fetch} from './utils/request'
+
 
 // import MenuUtils from '@/utils/menuUtils'
 // import {storeLoginRouters} from '@/utils/utils'
@@ -23,17 +25,22 @@ Vue.use(VueI18n);
 Vue.use(ElementUI, {
     size: 'small'
 });
-Vue.prototype.$axios = axios;
+
+//定义全局变量
+Vue.prototype.$post = post;
+Vue.prototype.$fetch = fetch;
+
+// Vue.prototype.$axios = axios;
 
 // get request token 
-let token = getSessionData('token')
-axios.defaults.headers.common['Authorization'] = token;
-let baseURL = 'http://localhost:8088/';
-// production
-if (process.env.NODE_ENV === 'production') {
+// let token = getSessionData('token')
+// axios.defaults.headers.common['Authorization'] = token;
+// let baseURL = 'http://localhost:8088/';
+// // production
+// if (process.env.NODE_ENV === 'production') {
 
-}
-axios.defaults.baseURL = baseURL;
+// }
+// axios.defaults.baseURL = baseURL;
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 
 const i18n = new VueI18n({
