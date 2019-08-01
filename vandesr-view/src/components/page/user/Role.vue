@@ -52,6 +52,23 @@
           :total="total">
         </el-pagination>
       </div>
+
+<!--      弹出编辑页面-->
+      <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
+        <el-form ref="formInline" :model="formInline" label-width="150px">
+          <el-form-item label="角色编码">
+            <el-input v-model="formInline.roleCode"></el-input>
+            <el-input type="hidden" v-model="formInline.id"></el-input>
+          </el-form-item>
+          <el-form-item label="角色名称">
+            <el-input v-model="formInline.roleName"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="editVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveEdit">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -62,10 +79,13 @@ export default {
   name: 'roleManage',
   data: function() {
     return {
+      // 弹出编辑页面
+      editVisible: false,
       roles: [],
       formInline : {
         roleCode: '',
-        roleName: ''
+        roleName: '',
+        id: ''
       },
       cur_page: 1,
       total: 0,
@@ -130,6 +150,12 @@ export default {
     handleEdit(index, row) {
       console.log(index)
       console.log(row)
+      this.editVisible = true;
+      this.formInline.id = row.id;
+      this.formInline.roleCode = row.roleCode;
+      this.formInline.roleName = row.roleName;
+
+
     }
   }
 }
