@@ -1,6 +1,9 @@
 package cn.com.vandesr.backend.config.mybatis.datasource;
 
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.plugin.Plugin;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +24,7 @@ public class MyBatisConfig {
 
     @Bean
     public MybatisSqlSessionFactoryBean sqlSessionFactory(@Qualifier("routingDataSource") DataSource routingDataSource) throws Exception{
-        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+//        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         MybatisSqlSessionFactoryBean mybatisSqlSessionFactoryBean = new MybatisSqlSessionFactoryBean();
         mybatisSqlSessionFactoryBean.setDataSource(routingDataSource);
         //sqlSessionFactoryBean.setDataSource(routingDataSource);
@@ -30,6 +33,7 @@ public class MyBatisConfig {
                 .getResources("classpath:mapper/*.xml"));
 //        sqlSessionFactoryBean.setMapperLocations(new PathMatchingResourcePatternResolver()
 //                .getResources("classpath:mapper/*.xml"));
+        mybatisSqlSessionFactoryBean.setPlugins(new Interceptor[] {paginationInterceptor()});
         return mybatisSqlSessionFactoryBean;
     }
 
@@ -37,6 +41,18 @@ public class MyBatisConfig {
     public PlatformTransactionManager platformTransactionManager(@Qualifier("routingDataSource") DataSource routingDataSource) {
         return new DataSourceTransactionManager(routingDataSource);
     }
+
+    /**
+     * 分页插件
+     */
+    @Bean
+    public PaginationInterceptor paginationInterceptor() {
+        PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
+        paginationInterceptor.setDialectType("mysql");
+        // paginationInterceptor.setLimit(你的最大单页限制数量，默认 500 条，小于 0 如 -1 不受限制);
+        return paginationInterceptor;
+    }
+
 
 //    @Bean
 //    public MapperScannerConfigurer mapperScannerConfigurer() {

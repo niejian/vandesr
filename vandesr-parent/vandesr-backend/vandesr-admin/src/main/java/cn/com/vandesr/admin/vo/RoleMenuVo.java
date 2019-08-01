@@ -16,9 +16,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleMenuVo implements Serializable {
-
-    private VandesrRole role;
+public class RoleMenuVo extends VandesrRole implements Serializable {
 
     private List<RoleMenuMapVo> menuList;
 

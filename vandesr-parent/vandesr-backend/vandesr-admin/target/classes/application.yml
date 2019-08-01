@@ -1,9 +1,9 @@
 
 mybatis-plus:
-  mapper-location: classpath*:mapper/*.xml
+  mapper-location: classpath*:/mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 spring:
   datasource:
     master:

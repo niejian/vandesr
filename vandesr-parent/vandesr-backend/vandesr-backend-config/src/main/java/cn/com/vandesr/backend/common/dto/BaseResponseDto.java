@@ -15,7 +15,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class BaseResponseDto<T extends Object> implements Serializable {
     private Boolean success = CommonInstance.FAIL;
-    private Integer responCode = CommonInstance.FAIL_CODE;
+    private Integer responseCode = CommonInstance.FAIL_CODE;
     private String responseMsg = CommonInstance.FAIL_MSG;
     private T data;
 
@@ -24,8 +24,8 @@ public class BaseResponseDto<T extends Object> implements Serializable {
         return this;
     }
 
-    public BaseResponseDto responCode(Integer responCode) {
-        this.responCode = responCode;
+    public BaseResponseDto responseCode(Integer responseCode) {
+        this.responseCode = responseCode;
         return this;
     }
 

@@ -14,12 +14,12 @@
 
     <dependencies>
         <!--数据库配置-->
-        <dependency>
-            <groupId>cn.com.vandesr</groupId>
-            <artifactId>mybatis-config</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+<!--        <dependency>-->
+<!--            <groupId>cn.com.vandesr</groupId>-->
+<!--            <artifactId>mybatis-config</artifactId>-->
+<!--            <version>0.0.1-SNAPSHOT</version>-->
 
-        </dependency>
+<!--        </dependency>-->
 
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.kafka</groupId>-->

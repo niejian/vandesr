@@ -4,6 +4,7 @@ import router from '@/router'
 import {Notification, Col} from 'element-ui'
 
 axios.defaults.timeout = 5000;
+
 let token = getSessionData('token')
 // if (token) {
 //   token = JSON.parse(token)
@@ -24,6 +25,7 @@ axios.baseURL = baseURL;
 
 // 请求拦截
 axios.interceptors.request.use( config => {
+  //debugger
     let url = config.url;
     if (url.indexOf(baseURL) < 0) {
       config.url = baseURL + url

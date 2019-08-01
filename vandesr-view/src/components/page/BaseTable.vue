@@ -5,6 +5,14 @@
                 <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 基础表格</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
+        <el-form :inline="true" :model="formInline" class="demo-form-inline">
+          <el-form-item label="角色编码">
+            <el-input v-model="formInline.roleCode" placeholder="角色编码"></el-input>
+          </el-form-item>
+          <el-form-item label="角色名称">
+            <el-input v-model="formInline.roleName" placeholder="角色名称"></el-input>
+          </el-form-item>
+        </el-form>  
         <div class="container">
             <div class="handle-box">
                 <el-button type="primary" icon="el-icon-delete" class="handle-del mr10" @click="delAll">批量删除</el-button>

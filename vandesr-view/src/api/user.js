@@ -8,3 +8,15 @@ export function login(data) {
     data
   })
 }
+
+/**
+ * 获取角色信息
+ * @param {} data 
+ */
+export function getRoleList(data) {
+  return request({
+    url: '/user/role/list',
+    method: 'post',
+    data
+  })
+}

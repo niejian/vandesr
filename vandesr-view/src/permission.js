@@ -22,7 +22,7 @@ router.beforeEach((to, from, next) => {
         authRouters.push('/' + data.component)
       })
     }
-    debugger
+    
     if (!whiteList.includes(to.path)) {
       if (!authRouters || authRouters <= 0 || !authRouters.includes(to.path)) {
         next({'path': '/403'})

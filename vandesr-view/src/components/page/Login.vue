@@ -84,43 +84,6 @@
                        })
 
 
-                      
-                      // 使用axios必须在success，error后加上bind(this)不然会报错
-                      // this.$post('http://localhost:8088/user/login', {
-                      //   email: this.ruleForm.username,
-                      //   password: md5(this.ruleForm.password)
-                      // })
-                      // .then(function (response) {
-                      //   debugger
-                      //   token = response.data.data.token;
-                      //   menus = response.data.data.menusTree;
-                      //   menuRouters = response.data.data.leafMenus;
-                      //   if(!token) {
-                      //     this.$message.error(response.data.responseMsg);
-                      //     this.$router.push('/login');
-                      //   }
-                      //   addSessionData('token', token);
-
-                      //   if(menus && menus.length > 0) {
-                          
-                      //     // MenuUtils(routers, menuRouters)
-                      //     // 登陆请求
-                      //     addSessionData('menuTrees', JSON.stringify(menus))
-                      //     addSessionData('menuRouters',JSON.stringify(menuRouters))
-
-                      //     //console.log(menuRouters);
-                      //     // this.$router.addRoutes(routers);
-                      //     // 从缓存中加载路由信息
-                      //     //storeLoginRouters()
-                      //     addSessionData('ms_username',this.ruleForm.username);
-                      //     this.$router.push('/');
-                      //   }       
-
-                      // }.bind(this))
-                      // .catch(function (error) {
-                      //   console.log(error);
-                      // }.bind(this));
-                      
                     } else {
                         console.log('error submit!!');
                         return false;

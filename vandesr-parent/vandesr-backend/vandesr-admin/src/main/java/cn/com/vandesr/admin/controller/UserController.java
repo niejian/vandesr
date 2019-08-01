@@ -181,7 +181,7 @@ public class UserController {
         }
 
 
-        return  responseDto.success(isSuccess).responCode(responseCode).responseMsg(responseMsg).data(map);
+        return  responseDto.success(isSuccess).responseCode(responseCode).responseMsg(responseMsg).data(map);
 
     }
 
