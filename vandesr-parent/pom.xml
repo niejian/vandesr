@@ -77,11 +77,11 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
 
-        <repository>
-            <id>snapshots</id>
-            <name>snapshots</name>
-            <url>http://192.168.236.7:8081/nexus/content/repositories/snapshots/</url>
-        </repository>
+        <!--<repository>-->
+            <!--<id>snapshots</id>-->
+            <!--<name>snapshots</name>-->
+            <!--<url>http://192.168.236.7:8081/nexus/content/repositories/snapshots/</url>-->
+        <!--</repository>-->
     </repositories>
 
     <!--mvn clean deploy  部署地址-->

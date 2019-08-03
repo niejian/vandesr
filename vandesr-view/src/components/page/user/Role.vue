@@ -16,6 +16,8 @@
         </el-form-item>
         <el-form-item label="">
           <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
+          <el-button type="default" icon="el-icon-refresh" @click="resetQuery">重置</el-button>
+
         </el-form-item>
       </el-form> 
       <!-- 数据展示 -->
@@ -55,17 +57,17 @@
 
 <!--      弹出编辑页面-->
       <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-        <el-form ref="formInline" :model="formInline" label-width="150px">
+        <el-form ref="formData" :model="formData" :rules="rules" label-width="150px">
           <el-form-item label="角色编码">
-            <el-input v-model="formInline.roleCode"></el-input>
-            <el-input type="hidden" v-model="formInline.id"></el-input>
+            <el-input v-model="formData.roleCode"></el-input>
+            <el-input type="hidden" v-model="formData.id"></el-input>
           </el-form-item>
           <el-form-item label="角色名称">
-            <el-input v-model="formInline.roleName"></el-input>
+            <el-input v-model="formData.roleName"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="editVisible = false">取 消</el-button>
+          <el-button @click="cancelBtn">取 消</el-button>
           <el-button type="primary" @click="saveEdit">确 定</el-button>
         </span>
       </el-dialog>
@@ -74,7 +76,7 @@
 </template>
 
 <script>
-import {getRoleList} from '@/api/user'
+import {getRoleList, updateRole} from '@/api/user'
 export default {
   name: 'roleManage',
   data: function() {
@@ -87,14 +89,44 @@ export default {
         roleName: '',
         id: ''
       },
+
+      formData: {
+        roleCode: '',
+        roleName: '',
+        id: '',
+        type: '',
+      },
       cur_page: 1,
       total: 0,
       pageNum: 1,
       pagesize: 10,
+      editRules: {
+        roleCode : [
+          { required: true, message: '请输入角色编码', trigger: 'blur' },
+          {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' }
+        ],
+        roleName : [
+          { required: true, message: '请输入角色名称', trigger: 'blur' },
+          {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' }
+        ]
+          
+      }
 
     }
 
   },
+  rules: {
+    roleCode : [
+      { required: true, message: '请输入角色编码', trigger: 'blur' },
+      {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' }
+    ],
+    roleName : [
+      { required: true, message: '请输入角色名称', trigger: 'blur' },
+      {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' }
+    ]
+      
+  },
+
   created() {
     this.search();
   },
@@ -151,11 +183,96 @@ export default {
       console.log(index)
       console.log(row)
       this.editVisible = true;
-      this.formInline.id = row.id;
-      this.formInline.roleCode = row.roleCode;
-      this.formInline.roleName = row.roleName;
+      this.formData.id = row.id;
+      this.formData.roleCode = row.roleCode;
+      this.formData.roleName = row.roleName;
+      this.formData.type = 'edit';
+    },
+    // 后台编辑请求
+    saveEdit() {
+      debugger
+      updateRole(this.formData).then(response => {
+        let responseCode = response.responseCode;
+        let responseMsg = response.responseMsg;
+        let success = response.success;
+        if(success && 0 === responseCode ) {
+          this.$message({
+            type: 'success',
+            showClose: true,
+            message: '更新成功'
+          });
+          // 关闭层
+          this.cancelBtn();
+          this.search()
 
+        }else {
+          this.$message({
+            type: 'error',
+            showClose: true,
+            message: response.responseMsg
+          })
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
 
+    resetQuery() {
+      this.formInline = {
+        roleCode: '',
+        roleName: '',
+        id: ''
+      }
+    },
+    // 删除
+    handleDelete(index, row) {
+      // 弹出提示框
+     this.$confirm('是否确认删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        alert('确定')
+        this.deleteRole();
+          
+      }).catch(() => {
+        alert('取消删除')
+      })
+    },
+    // 删除
+    deleteRole(data) {
+      this.formData.id = row.id;
+      this.formData.type = 'del';
+      // 删除操作
+      updateRole(this.formData).then(response => {
+        let responseCode = response.responseCode;
+        let responseMsg = response.responseMsg;
+        let success = response.success;
+        if(success && 0 === responseCode ) {
+          this.$message({
+            type: 'success',
+            showClose: true,
+            message: '删除成功'
+          })
+          this.search()
+        }else {
+          this.$message({
+            type: 'error',
+            showClose: true,
+            message: response.responseMsg
+          })
+        }
+      }).catch(err => {
+        console.log(error)
+      })
+    },
+    // 取消
+    cancelBtn() {
+      // this.formInline
+      this.formData.id = '';
+      this.formData.roleCode = '';
+      this.formData.roleName = '';
+      this.editVisible = false;
     }
   }
 }

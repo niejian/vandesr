@@ -20,3 +20,15 @@ export function getRoleList(data) {
     data
   })
 }
+
+/**
+ * 编辑角色信息
+ * @param {角色信息} data 
+ */
+export function updateRole(data) {
+  return request({
+    url: '/user/role/update',
+    method: 'post',
+    data
+  })
+}

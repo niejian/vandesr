@@ -13,9 +13,6 @@ import java.util.List;
  */
 @Data
 @ToString
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class RoleMenuVo extends VandesrRole implements Serializable {
 
     private List<RoleMenuMapVo> menuList;

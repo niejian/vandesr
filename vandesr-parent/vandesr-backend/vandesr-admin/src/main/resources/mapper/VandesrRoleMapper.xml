@@ -21,4 +21,12 @@
         id, role_code, role_name, delete_flag, create_date, create_user_code, create_user_name, update_date, update_user_code, update_user_name
     </sql>
 
+    <select id="isMutiRoleCode" resultType="java.lang.Integer">
+        SELECT count(1) from vandesr_role where role_code = #{roleCode} and id &lt;&gt; #{id}
+    </select>
+
+    <select id="isMutiRoleName" resultType="java.lang.Integer">
+        SELECT count(1) from vandesr_role where role_name = #{roleCode} and id &lt;&gt; #{id}
+    </select>
+
 </mapper>
