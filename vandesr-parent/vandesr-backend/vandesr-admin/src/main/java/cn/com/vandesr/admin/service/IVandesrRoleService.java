@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import net.sf.json.JSONObject;
 
 /**
  * <p>
@@ -27,4 +28,13 @@ public interface IVandesrRoleService extends IService<VandesrRole> {
      */
     IPage<VandesrRole> getRoleList(String roleCode, String roleName, int pageNum, int pageSize) throws Exception;
 
+    /**
+     * 更新或删除角色信息；当角色编码已存在
+     * @param loginAccount
+     * @param type
+     * @param roleJSON
+     * @return
+     * @throws Exception
+     */
+    boolean updateRole(String loginAccount, String type, JSONObject roleJSON) throws Exception;
 }

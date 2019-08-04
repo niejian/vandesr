@@ -5,11 +5,10 @@ import {Notification, Col} from 'element-ui'
 
 axios.defaults.timeout = 5000;
 
-let token = getSessionData('token')
 // if (token) {
 //   token = JSON.parse(token)
 // }
-axios.defaults.headers.common['Authorization'] = token;
+// axios.defaults.headers.common['Authorization'] = token;
 
 // const service = axios.create({
 //     process.env.NODE_ENV === 'development', //来判断是否开发环境
@@ -25,20 +24,22 @@ axios.baseURL = baseURL;
 
 // 请求拦截
 axios.interceptors.request.use( config => {
-  //debugger
-    let url = config.url;
-    if (url.indexOf(baseURL) < 0) {
-      config.url = baseURL + url
-    }
-    // 设置请求头
-    if (token) {
-      // token = JSON.parse(token)
-      config.headers.Authorization = token
-    }
-    return config;
+  let token = getSessionData('token')
+
+  
+  let url = config.url;
+  if (url.indexOf(baseURL) < 0) {
+    config.url = baseURL + url
+  }
+  // 设置请求头
+  if (token) {
+    // token = JSON.parse(token)
+    config.headers.Authorization = token
+  }
+  return config;
 }, error => {
-    console.log(error);
-    return Promise.reject();
+  console.log(error);
+  return Promise.reject();
 })
 
 // 响应拦截
