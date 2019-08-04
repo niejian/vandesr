@@ -7,12 +7,12 @@ mybatis-plus:
 spring:
   datasource:
     master:
-      jdbc-url: jdbc:mysql://yun2:3306/vandesr
+      jdbc-url: jdbc:mysql://yun2:3306/vandesr?useUnicode=true&characterEncoding=utf8
       username: root
       password: code4fun1234
       driver-class-name: com.mysql.jdbc.Driver
     slave:
-      jdbc-url: jdbc:mysql://yun2:3306/vandesr
+      jdbc-url: jdbc:mysql://yun2:3306/vandesr?useUnicode=true&characterEncoding=utf8
       username: root   # 只读账户
       password: code4fun1234
       driver-class-name: com.mysql.jdbc.Driver

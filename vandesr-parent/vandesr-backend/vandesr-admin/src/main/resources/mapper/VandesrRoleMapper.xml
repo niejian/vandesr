@@ -22,11 +22,20 @@
     </sql>
 
     <select id="isMutiRoleCode" resultType="java.lang.Integer">
-        SELECT count(1) from vandesr_role where role_code = #{roleCode} and id &lt;&gt; #{id}
+        SELECT count(1) from vandesr_role where role_code = #{roleCode}
+        <if test="null != id and id > 0">
+            and id &lt;&gt; #{id}
+        </if>
     </select>
 
     <select id="isMutiRoleName" resultType="java.lang.Integer">
-        SELECT count(1) from vandesr_role where role_name = #{roleCode} and id &lt;&gt; #{id}
+        SELECT count(1) from vandesr_role where 1 = 1
+
+         and role_name = #{roleCode}
+        <if test="null != id and id > 0">
+            and id &lt;&gt; #{id}
+        </if>
+
     </select>
 
 </mapper>

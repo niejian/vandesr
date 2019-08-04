@@ -11,6 +11,7 @@ import cn.com.vandesr.backend.common.CommonFunction;
 import cn.com.vandesr.backend.common.instance.CommonInstance;
 import cn.com.vandesr.backend.config.aop.LogAspect;
 import cn.com.vandesr.backend.common.dto.BaseResponseDto;
+import cn.com.vandesr.backend.config.security.JwtUser;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -124,17 +125,19 @@ public class RoleController {
         Boolean isContinue = true;
         CommonFunction.beforeProcess(log, jsonObject);
         try {
-            String type = jsonObject.optString("type", "edit");
             JSONObject role = jsonObject.optJSONObject("role");
+            String type = role.optString("type", "edit");
+
             if (null == role) {
                 isContinue = false;
                 responseMsg = "请选择一条数据";
             }
+            String roleCode = role.getString("roleCode");
+            String roleName = role.getString("roleName");
+
 
             // 如果是编辑操作，那么判断角色名称，角色编码是否存在
-            if (isContinue && "edit".equals(type)) {
-                String roleCode = role.getString("roleCode");
-                String roleName = role.getString("roleName");
+            if (isContinue && !"del".equals(type)) {
 
                 if (StringUtils.isEmpty(roleCode)) {
                     isContinue = false;
@@ -149,10 +152,23 @@ public class RoleController {
 
                 // 判断角色编码、名称是否唯一
                 String roleId = role.getString("id");
-                int count = roleMapper.isMutiRoleCode(roleId, roleCode);
-                if (count > 0) {
+                VandesrRole role1 = this.roleService.getById(roleId);
+                if (null == role1 && "edit".equals(type)) {
                     isContinue = false;
-                    responseMsg = "角色编码已存在，请重新输入";
+                    responseMsg = "数据不存在，请重新选择";
+                }
+
+                int count = 0;
+                if (isContinue) {
+                    if (roleCode.indexOf("ROLE_") != 0) {
+                        roleCode = "ROLE_" + roleCode;
+                    }
+                    count = roleMapper.isMutiRoleCode(roleId, roleCode);
+                    if (count > 0) {
+                        isContinue = false;
+                        responseMsg = "角色编码已存在，请重新输入";
+                    }
+
                 }
 
                 if (isContinue) {
@@ -167,11 +183,14 @@ public class RoleController {
 
             if (isContinue) {
                 // 获取登录人信息
-                String loginAccount = (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                roleService.updateRole(loginAccount, type, role);
-                responseMsg = CommonInstance.SUCCESS_MSG;
-                responseCode = CommonInstance.SUCCESS_CODE;
-                isSuccess = CommonInstance.SUCCESS;
+                JwtUser loginUser = (JwtUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                if (null != loginUser) {
+                    roleService.updateRole(loginUser.getUsername(), type, role);
+                    responseMsg = CommonInstance.SUCCESS_MSG;
+                    responseCode = CommonInstance.SUCCESS_CODE;
+                    isSuccess = CommonInstance.SUCCESS;
+                }
+
             }
 
         } catch (Exception e) {

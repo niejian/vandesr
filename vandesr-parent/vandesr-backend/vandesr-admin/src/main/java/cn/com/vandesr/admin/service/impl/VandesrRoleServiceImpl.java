@@ -75,7 +75,7 @@ public class VandesrRoleServiceImpl extends ServiceImpl<VandesrRoleMapper, Vande
     @Override
     public boolean updateRole(String loginAccount, String type, JSONObject roleJSON) throws Exception {
         Integer roleId = roleJSON.getInt("id");
-        if ("delete".equals(type)) {
+        if ("del".equals(type)) {
             removeById(roleId);
         } else {
             QueryWrapper<VandesrUser> userQueryWrapper = new QueryWrapper<>();
@@ -88,13 +88,30 @@ public class VandesrRoleServiceImpl extends ServiceImpl<VandesrRoleMapper, Vande
 
             Date date = new Date();
             VandesrRole role = getById(roleId);
+            if ("add".equals(type)) {
+                role = new VandesrRole();
+            }
             role.setUpdateDate(date);
             role.setUpdateUserCode(loginAccount);
+            String roleCode = roleJSON.getString("roleCode");
             role.setUpdateUserName(loginName);
-            role.setRoleCode(roleJSON.getString("roleCode"));
+            if (roleCode.indexOf("ROLE_") != 0) {
+                roleCode = "ROLE_" + roleCode;
+            }
+            role.setRoleCode(roleCode);
             role.setRoleName(roleJSON.getString("roleName"));
-            role.setId(roleId);
-            updateById(role);
+            if ("edit".equals(type)) {
+                role.setId(roleId);
+                updateById(role);
+            } else if ("add".equals(type)) {
+                role.setDeleteFlag(0);
+                role.setCreateUserName(loginName);
+                role.setCreateUserCode(loginAccount);
+                role.setCreateDate(date);
+
+                save(role);
+            }
+
 
         }
         return true;

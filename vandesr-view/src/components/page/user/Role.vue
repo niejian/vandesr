@@ -20,13 +20,26 @@
 
         </el-form-item>
       </el-form> 
+      <!--操作按钮 -->
+      <div class="toolbar">
+        <el-button type="success" icon="el-icon-plus" @click="handleAdd()">添加</el-button>
+        <el-button type="info" icon="el-icon-search" @click="handleView()">查看</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="handleEdit()">编辑</el-button>
+        <el-button type="warning" icon="el-icon-delete" class="red" @click="handleDelete()">删除</el-button>
+      </div>
       <!-- 数据展示 -->
-      <el-table :data="roles" 
+      <el-table 
+        :data="roles" 
         border 
-        class="table" 
-        highlight-current-row
-        @current-change="handleCurrentChange">
-        <el-table-column type="selection" width="55" align="center"></el-table-column>
+        class="table"
+        @row-click="onRowClick"
+        highlight-current-row>
+        <el-table-column align="center" width="55" label="" >
+          <template slot-scope="scope">
+            <el-radio class="radio"  v-model="radio"  :label="scope.$index">&nbsp;</el-radio>
+          </template>
+        </el-table-column>
+
         <el-table-column label="id" prop="id" v-if="1!=1"></el-table-column>
         <el-table-column label="角色编码" prop="roleCode" align="center"></el-table-column>
         <el-table-column label="角色名称" prop="roleName" align="center"></el-table-column>
@@ -35,12 +48,12 @@
         <el-table-column label="修改时间" prop="updateDate" align="center"></el-table-column>
         <el-table-column label="修改时间" prop="updateDate" align="center"></el-table-column>
         <el-table-column label="修改人" prop="updateUserCode" align="center" :formatter='formatUpdateUser'></el-table-column>
-        <el-table-column label="操作" width="180" align="center">
+        <!-- <el-table-column label="操作" width="180" align="center">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button type="warning" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
       <div class="block">
         <el-pagination 
@@ -56,19 +69,19 @@
       </div>
 
 <!--      弹出编辑页面-->
-      <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
+      <el-dialog :title="title" :closeOnClickModal="closeOnClickModal" :visible.sync="editVisible" width="30%">
         <el-form ref="formData" :model="formData" :rules="rules" label-width="150px">
-          <el-form-item label="角色编码">
-            <el-input v-model="formData.roleCode"></el-input>
+          <el-form-item label="角色编码" prop="roleCode">
+            <el-input v-model="formData.roleCode" :readonly="isReadOnly"></el-input>
             <el-input type="hidden" v-model="formData.id"></el-input>
           </el-form-item>
-          <el-form-item label="角色名称">
-            <el-input v-model="formData.roleName"></el-input>
+          <el-form-item label="角色名称" prop="roleName">
+            <el-input v-model="formData.roleName" ></el-input>
           </el-form-item>
         </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="cancelBtn">取 消</el-button>
-          <el-button type="primary" @click="saveEdit">确 定</el-button>
+        <span slot="footer" v-if="isShow" class="dialog-footer">
+          <el-button @click="cancelBtn('formData')">取 消</el-button>
+          <el-button type="primary" @click="saveEdit('formData')">确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -81,6 +94,12 @@ export default {
   name: 'roleManage',
   data: function() {
     return {
+      isReadOnly: true,
+      title: '编辑',
+      isShow: false,
+      radio: '',
+		  selected:{},
+      closeOnClickModal: false,
       // 弹出编辑页面
       editVisible: false,
       roles: [],
@@ -100,7 +119,7 @@ export default {
       total: 0,
       pageNum: 1,
       pagesize: 10,
-      editRules: {
+      rules: {
         roleCode : [
           { required: true, message: '请输入角色编码', trigger: 'blur' },
           {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' }
@@ -115,18 +134,6 @@ export default {
     }
 
   },
-  rules: {
-    roleCode : [
-      { required: true, message: '请输入角色编码', trigger: 'blur' },
-      {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' }
-    ],
-    roleName : [
-      { required: true, message: '请输入角色名称', trigger: 'blur' },
-      {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' }
-    ]
-      
-  },
-
   created() {
     this.search();
   },
@@ -149,7 +156,11 @@ export default {
     formatUpdateUser(row, column) {
       return row.updateUserCode + '\n' + row.updateUserName
     },
-    
+    // 单选效果
+    onRowClick(row, index) {
+      this.radio = this.roles.indexOf(row);
+      this.selected= row;
+    },
     search() {
       var page = new Object();
       page.pageNum = this.pageNum;
@@ -179,42 +190,93 @@ export default {
       })
     },
 
-    handleEdit(index, row) {
-      console.log(index)
-      console.log(row)
+    //添加
+    handleAdd() {
+      this.title = '添加';
       this.editVisible = true;
-      this.formData.id = row.id;
-      this.formData.roleCode = row.roleCode;
-      this.formData.roleName = row.roleName;
+      this.isShow = true;
+      this.formData.type = 'add';
+      this.isReadOnly = false;
+      this.formData.id = 0;
+
+    },
+    // 查看
+    handleView() {
+      let selectedId = this.selected.id;
+      this.isReadOnly = true;
+      if(!selectedId) {
+        this.$message({
+          type: 'warning',
+          showClose: true,
+          message: '请选择一条数据'
+        })
+        return false;
+      }
+      this.isShow = false;
+      this.title = '查看';
+      this.editVisible = true;
+      this.formData.id = this.selected.id;
+      this.formData.roleCode = this.selected.roleCode;
+      this.formData.roleName = this.selected.roleName;
       this.formData.type = 'edit';
     },
-    // 后台编辑请求
-    saveEdit() {
-      debugger
-      updateRole(this.formData).then(response => {
-        let responseCode = response.responseCode;
-        let responseMsg = response.responseMsg;
-        let success = response.success;
-        if(success && 0 === responseCode ) {
-          this.$message({
-            type: 'success',
-            showClose: true,
-            message: '更新成功'
-          });
-          // 关闭层
-          this.cancelBtn();
-          this.search()
 
-        }else {
-          this.$message({
-            type: 'error',
-            showClose: true,
-            message: response.responseMsg
+    handleEdit() {
+      this.isReadOnly = true;
+      let selectedId = this.selected.id;
+      if(!selectedId) {
+        this.$message({
+          type: 'warning',
+          showClose: true,
+          message: '请选择一条数据'
+        })
+        return false;
+      }
+      this.isShow = true;
+      this.title = '编辑';
+      this.editVisible = true;
+      this.formData.id = this.selected.id;
+      this.formData.roleCode = this.selected.roleCode;
+      this.formData.roleName = this.selected.roleName;
+      this.formData.type = 'edit';
+    },
+    // 后台编辑/添加请求
+    saveEdit(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          
+          updateRole({role: this.formData}).then(response => {
+            let responseCode = response.responseCode;
+            let responseMsg = response.responseMsg;
+            let success = response.success;
+            if(success && 0 === responseCode ) {
+              this.$message({
+                type: 'success',
+                showClose: true,
+                message: '更新成功'
+              });
+              // 关闭层，并重置弹出层的form
+              this.cancelBtn('formData');
+              this.selected = {};
+              this.search();
+
+            }else {
+              this.$message({
+                type: 'error',
+                showClose: true,
+                message: response.responseMsg
+              })
+            }
+          }).catch(err => {
+            console.log(err)
           })
+        } else {
+          console.log('error submit!!');
+          return false;
         }
-      }).catch(err => {
-        console.log(err)
-      })
+        
+      });
+      
     },
 
     resetQuery() {
@@ -225,26 +287,37 @@ export default {
       }
     },
     // 删除
-    handleDelete(index, row) {
+    handleDelete() {
+      let selectedId = this.selected.id;
+      if(!selectedId) {
+        this.$message({
+          type: 'warning',
+          showClose: true,
+          message: '请选择一条数据'
+        })
+        return false;
+      }
       // 弹出提示框
      this.$confirm('是否确认删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        alert('确定')
-        this.deleteRole();
-          
-      }).catch(() => {
-        alert('取消删除')
+      }).then((action) => {
+        if (action === 'confirm') {
+          this.deleteRole(this.selected);
+        }
+        
+      }).catch((err) => {
+        console.log(err)
       })
     },
     // 删除
-    deleteRole(data) {
+    deleteRole(row) {
       this.formData.id = row.id;
       this.formData.type = 'del';
       // 删除操作
-      updateRole(this.formData).then(response => {
+      updateRole({role: this.formData}).then(response => {
+        
         let responseCode = response.responseCode;
         let responseMsg = response.responseMsg;
         let success = response.success;
@@ -254,7 +327,9 @@ export default {
             showClose: true,
             message: '删除成功'
           })
-          this.search()
+          this.selected = {};
+
+          this.search();
         }else {
           this.$message({
             type: 'error',
@@ -267,11 +342,10 @@ export default {
       })
     },
     // 取消
-    cancelBtn() {
+    cancelBtn(formName) {
       // this.formInline
-      this.formData.id = '';
-      this.formData.roleCode = '';
-      this.formData.roleName = '';
+      this.$refs[formName].resetFields();
+      
       this.editVisible = false;
     }
   }
@@ -282,6 +356,10 @@ export default {
 <style scoped>
  .handle-box {
    margin-bottom: 20px;
+ }
+ .toolbar {
+   padding-bottom: 15px;
+   padding-left: 15px
  }
 </style>
 
