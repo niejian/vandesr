@@ -89,5 +89,11 @@ public interface IVandesrUserService extends IService<VandesrUser> {
     IPage<VandesrUser> getUsers(String userName, String loginName, String eamil, Page<VandesrUser> page) throws Exception;
 
 
+    /**
+     * 删除用户
+     * @param userId
+     * @return
+     */
+    boolean removeUser(String userId, String deleteFlag);
 
 }

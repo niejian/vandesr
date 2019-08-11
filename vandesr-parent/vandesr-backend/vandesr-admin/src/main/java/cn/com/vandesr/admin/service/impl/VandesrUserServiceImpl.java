@@ -575,7 +575,7 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
      * 分页获取用户信息
      *
      * @param userName
-     * @param loginAccount
+     * @param loginName
      * @param eamil
      * @param page
      * @return
@@ -588,8 +588,26 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
         queryWrapper.like("user_name", userName)
                 .like("login_name", loginName)
                 .like("email", eamil);
+//                .eq("delete_flag", 0);
 
 
         return this.page(page, queryWrapper);
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param userId
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean removeUser(String userId, String deleteFlag) {
+        VandesrUser user = this.getById(userId);
+        if (null != user) {
+            user.setDeleteFlag(Integer.parseInt(deleteFlag));
+            updateById(user);
+        }
+        return true;
     }
 }

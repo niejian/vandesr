@@ -283,14 +283,55 @@ public class UserController {
             responseCode = CommonInstance.SUCCESS_CODE;
             isSuccess = CommonInstance.SUCCESS;
         } catch (Exception e) {
-            e.printStackTrace();
             CommonFunction.genErrorMessage(log, e);
+
+            e.printStackTrace();
         }
 
         return baseResponseDto.success(isSuccess)
                 .responseMsg(responseMsg)
                 .responseCode(responseCode)
                 .data(userIPage);
+    }
+
+    /**
+     * 删除用户信息
+     * @param jsonObject
+     * @return
+     */
+    @PreAuthorize("hasRole('sysadmin')")
+    @PostMapping("/deleteUser")
+    public BaseResponseDto<Boolean> deleteUser(@RequestBody JSONObject jsonObject) {
+        BaseResponseDto<Boolean> baseResponseDto = new BaseResponseDto<>();
+        Boolean isSuccess = CommonInstance.FAIL;
+        String responseMsg = CommonInstance.FAIL_MSG;
+        Integer responseCode = CommonInstance.FAIL_CODE;
+        Boolean isContinue = true;
+        try {
+
+            String userId = jsonObject.optString("id", null);
+            String deleteFlag = jsonObject.optString("deleteFlag", "1");
+            if (null == userId || Long.parseLong(userId) <= 0) {
+                isContinue = false;
+                responseMsg = "请选择一条数据";
+            }
+
+            // 帐号中必须至少有一条是Sysadmin
+            this.vandesrUserService.removeUser(userId, deleteFlag);
+
+            responseMsg = CommonInstance.SUCCESS_MSG;
+            responseCode = CommonInstance.SUCCESS_CODE;
+            isSuccess = CommonInstance.SUCCESS;
+        } catch (Exception e) {
+            CommonFunction.genErrorMessage(log, e);
+            e.printStackTrace();
+
+        }
+
+        return baseResponseDto.success(isSuccess)
+                .responseMsg(responseMsg)
+                .responseCode(responseCode)
+                .data(isSuccess);
     }
 
 }
