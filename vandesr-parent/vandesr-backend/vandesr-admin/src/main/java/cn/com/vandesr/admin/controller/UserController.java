@@ -5,21 +5,25 @@ import cn.com.vandesr.admin.service.IVandesrUserService;
 import cn.com.vandesr.admin.service.UserService;
 import cn.com.vandesr.admin.vo.MenuRouterVo;
 import cn.com.vandesr.admin.vo.MenuVo;
+import cn.com.vandesr.admin.vo.RoleMenuVo;
 import cn.com.vandesr.admin.vo.VandesrUserVo;
+import cn.com.vandesr.backend.common.CommonFunction;
 import cn.com.vandesr.backend.config.aop.LogAspect;
 import cn.com.vandesr.backend.common.dto.BaseResponseDto;
 import cn.com.vandesr.backend.common.instance.CommonInstance;
 import cn.com.vandesr.backend.config.exception.AccountNotFountException;
 import cn.com.vandesr.backend.config.security.JwtUser;
 import cn.com.vandesr.backend.config.security.TokenUtil;
-import cn.com.vandesr.backend.config.service.RedisService;
 import cn.com.vandesr.backend.config.web.BaseResponse;
 import cn.com.vandesr.backend.config.web.BaseResponseExt;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -196,6 +200,11 @@ public class UserController {
         return user;
     }
 
+    /**
+     * 获取登陆用户的信息
+     * @param request
+     * @return
+     */
     @LogAspect
     @PostMapping("/getUserInfo")
     public BaseResponseExt<VandesrUserVo> getUserInfo(HttpServletRequest request) {
@@ -242,6 +251,46 @@ public class UserController {
 
 
         return baseResponseExt;
+    }
+
+    @PreAuthorize("hasRole('sysadmin')")
+    @PostMapping(value = "/getUsers")
+    public BaseResponseDto<IPage<VandesrUser>> getUsers(@RequestBody JSONObject jsonObject) {
+        BaseResponseDto<VandesrUser> baseResponseDto = new BaseResponseDto<>();
+
+        List<VandesrUser> list = new ArrayList<>();
+        Boolean isSuccess = CommonInstance.FAIL;
+        String responseMsg = CommonInstance.FAIL_MSG;
+        Integer responseCode = CommonInstance.FAIL_CODE;
+        IPage<VandesrUser> userIPage = null;
+
+        try {
+
+            JSONObject page = jsonObject.getJSONObject("page");
+            String userName = jsonObject.optString("userName", null);
+            String loginAccount = jsonObject.optString("loginAccount", null);
+            String email = jsonObject.optString("email", null);
+            int pageNum = page.optInt("pageNum", 1);
+            int pageSize = page.optInt("pageSize", 10);
+            Page queryPage = new Page(pageNum, pageSize);
+            // 分页获取用户信息
+            userIPage = this.vandesrUserService.getUsers(userName, loginAccount, email, queryPage);
+            if (null == userIPage) {
+                userIPage = new Page<>();
+            }
+
+            responseMsg = CommonInstance.SUCCESS_MSG;
+            responseCode = CommonInstance.SUCCESS_CODE;
+            isSuccess = CommonInstance.SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            CommonFunction.genErrorMessage(log, e);
+        }
+
+        return baseResponseDto.success(isSuccess)
+                .responseMsg(responseMsg)
+                .responseCode(responseCode)
+                .data(userIPage);
     }
 
 }

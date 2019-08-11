@@ -5,6 +5,8 @@ import cn.com.vandesr.admin.entity.VandesrUser;
 import cn.com.vandesr.admin.entity.VandesrUserRole;
 import cn.com.vandesr.admin.vo.MenuRouterVo;
 import cn.com.vandesr.admin.vo.MenuVo;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -74,6 +76,17 @@ public interface IVandesrUserService extends IService<VandesrUser> {
      * @throws Exception
      */
     List<MenuRouterVo> getLeafMenuByUserId(Integer userId) throws Exception;
+
+    /**
+     * 分页获取用户信息
+     * @param userName
+     * @param loginAccount
+     * @param eamil
+     * @param page
+     * @return
+     * @throws Exception
+     */
+    IPage<VandesrUser> getUsers(String userName, String loginAccount, String eamil, Page<VandesrUser> page) throws Exception;
 
 
 

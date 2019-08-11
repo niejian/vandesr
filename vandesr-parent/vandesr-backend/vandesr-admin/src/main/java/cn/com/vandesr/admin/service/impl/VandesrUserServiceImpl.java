@@ -10,6 +10,8 @@ import cn.com.vandesr.admin.vo.MenuRouterVo;
 import cn.com.vandesr.admin.vo.MenuVo;
 import cn.com.vandesr.backend.config.utils.SnowflakeIdWorker;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -567,5 +569,27 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
 
 
         return menuList;
+    }
+
+    /**
+     * 分页获取用户信息
+     *
+     * @param userName
+     * @param loginAccount
+     * @param eamil
+     * @param page
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public IPage<VandesrUser> getUsers(String userName, String loginAccount, String eamil, Page<VandesrUser> page) throws Exception {
+        QueryWrapper<VandesrUser> queryWrapper = new QueryWrapper<>();
+
+        queryWrapper.like("user_name", userName)
+                .like("login_account", loginAccount)
+                .like("emial", eamil);
+
+
+        return this.page(page, queryWrapper);
     }
 }

@@ -32,3 +32,15 @@ export function updateRole(data) {
     data
   })
 }
+
+/**
+ * 获取用户信息
+ * @param {查询条件} data 
+ */
+export function getUsers(data) {
+  return request({
+    url: '/user/getUsers',
+    method: 'post',
+    data
+  })
+}

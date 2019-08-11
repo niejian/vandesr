@@ -53,7 +53,7 @@ public class UserTest {
 //        System.out.println(DigestUtils.md5DigestAsHex(str.getBytes()));
 //    }
 
-    @Ignore
+    //@Ignore
     @Test
     public void addUser() throws Exception{
 //        DemoUser user = new DemoUser();
@@ -62,8 +62,11 @@ public class UserTest {
 //        user.setUserName("niejian");
 //        user.setUserId("100100113");
 //        this.userService.addUser(user);
-        String password = DigestUtils.md5DigestAsHex("qq123123".getBytes());
-        this.vandesrUserService.addUser("code4fun", "code4fun@qq.com", password);
+        for (int i = 0; i < 88; i++) {
+            String password = DigestUtils.md5DigestAsHex("qq123123".getBytes());
+            this.vandesrUserService.addUser(i + "", i + "@qq.com", password);
+        }
+
     }
 
 
