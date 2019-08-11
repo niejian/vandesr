@@ -32,3 +32,39 @@ export function updateRole(data) {
     data
   })
 }
+
+/**
+ * 获取用户信息
+ * @param {查询条件} data 
+ */
+export function getUsers(data) {
+  return request({
+    url: '/user/getUsers',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 更新用户状态
+ * @param {} data 
+ */
+export function removeUser(data) {
+  return request({
+    url: '/user/getUsers',
+    method: 'post',
+    data
+  })  
+}
+
+/**
+ * 获取用户角色信息
+ * @param {userId} data 
+ */
+export function getUserRoleInfo(data) {
+  return request({
+    url: '/user/getUserRole',
+    method: 'post',
+    data
+  })
+}

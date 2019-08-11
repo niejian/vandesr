@@ -52,9 +52,9 @@ public class RoleController {
     public BaseResponseDto<List<RoleMenuVo>> roleList(@RequestBody JSONObject jsonObject) {
         BaseResponseDto<List<RoleMenuVo>> responseDto = new BaseResponseDto<>();
         List<RoleMenuVo> list = new ArrayList<>();
-        Boolean isSuccess = false;
-        String responseMsg = "请求失败";
-        Integer responseCode = -1;
+        Boolean isSuccess = CommonInstance.FAIL;
+        String responseMsg = CommonInstance.FAIL_MSG;
+        Integer responseCode = CommonInstance.FAIL_CODE;
         IPage<VandesrRole> vandesrRoleIPage = null;
         try {
             JSONObject page = jsonObject.getJSONObject("page");

@@ -25,7 +25,8 @@
         <el-button type="success" icon="el-icon-plus" @click="handleAdd()">添加</el-button>
         <el-button type="info" icon="el-icon-search" @click="handleView()">查看</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="handleEdit()">编辑</el-button>
-        <el-button type="warning" icon="el-icon-delete" class="red" @click="handleDelete()">删除</el-button>
+        <!-- <el-button type="warning" icon="el-icon-user" @click="handle()">绑定用户</el-button> -->
+        <el-button type="danger" icon="el-icon-delete" class="red" @click="handleDelete()">删除</el-button>
       </div>
       <!-- 数据展示 -->
       <el-table 
@@ -195,10 +196,14 @@ export default {
       this.title = '添加';
       this.editVisible = true;
       this.isShow = true;
-      this.formData.type = 'add';
       this.isReadOnly = false;
-      this.formData.id = 0;
-
+      // 将formData置空
+      this.formData = {
+        roleCode: '',
+        roleName: '',
+        id: 0,
+        type: 'add',
+      }
     },
     // 查看
     handleView() {
@@ -250,10 +255,12 @@ export default {
             let responseMsg = response.responseMsg;
             let success = response.success;
             if(success && 0 === responseCode ) {
+              let type = this.formData.type;
+              let msg = type === 'add' ? '添加成功' : '更新成功';
               this.$message({
                 type: 'success',
                 showClose: true,
-                message: '更新成功'
+                message: msg
               });
               // 关闭层，并重置弹出层的form
               this.cancelBtn('formData');
