@@ -582,12 +582,12 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
      * @throws Exception
      */
     @Override
-    public IPage<VandesrUser> getUsers(String userName, String loginAccount, String eamil, Page<VandesrUser> page) throws Exception {
+    public IPage<VandesrUser> getUsers(String userName, String loginName, String eamil, Page<VandesrUser> page) throws Exception {
         QueryWrapper<VandesrUser> queryWrapper = new QueryWrapper<>();
 
         queryWrapper.like("user_name", userName)
-                .like("login_account", loginAccount)
-                .like("emial", eamil);
+                .like("login_name", loginName)
+                .like("email", eamil);
 
 
         return this.page(page, queryWrapper);

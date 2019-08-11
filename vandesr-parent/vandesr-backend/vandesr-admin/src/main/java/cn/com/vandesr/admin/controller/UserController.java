@@ -268,13 +268,13 @@ public class UserController {
 
             JSONObject page = jsonObject.getJSONObject("page");
             String userName = jsonObject.optString("userName", null);
-            String loginAccount = jsonObject.optString("loginAccount", null);
+            String loginName = jsonObject.optString("loginName", null);
             String email = jsonObject.optString("email", null);
             int pageNum = page.optInt("pageNum", 1);
             int pageSize = page.optInt("pageSize", 10);
             Page queryPage = new Page(pageNum, pageSize);
             // 分页获取用户信息
-            userIPage = this.vandesrUserService.getUsers(userName, loginAccount, email, queryPage);
+            userIPage = this.vandesrUserService.getUsers(userName, loginName, email, queryPage);
             if (null == userIPage) {
                 userIPage = new Page<>();
             }

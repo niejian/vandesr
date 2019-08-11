@@ -10,14 +10,14 @@
 
     <div class="container">
       <el-form :inline="true" :model="formData" class="demo-form-inline">
-        <el-form-item label="登陆账号">
-          <el-input v-model="formData.loginAccount" placeholder="登陆账号"></el-input>
+        <el-form-item label="昵称">
+          <el-input v-model="formData.loginName" placeholder="昵称"></el-input>
         </el-form-item>
         <el-form-item label="用户名称">
           <el-input v-model="formData.userName" placeholder="用户名称"></el-input>
         </el-form-item>
         <el-form-item label="邮箱">
-          <el-input v-model="email" placeholder="邮箱"></el-input>
+          <el-input v-model="formData.email" placeholder="邮箱"></el-input>
         </el-form-item>
         <el-form-item label="">
           <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
@@ -28,13 +28,13 @@
 
       <!-- 按钮操作 -->
       <div class="toolbar">
-        <el-button type="info" icon="el-icon-search" @click="handleView()">查看</el-button>
+        <el-button type="success" icon="el-icon-search" @click="handleView()">查看</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="handleEdit()">编辑</el-button>
       </div>
 
        <!-- 数据展示 -->
        <el-table
-        data="users"
+        :data="users"
         border 
         class="table"
         @row-click="onRowClick"
@@ -54,11 +54,13 @@
         <el-table-column label="是否有效" width="180" align="center">
           <template slot-scope="scope">
             <el-switch 
-              v-model="scope.row.isDeleted"
-              active-color="#13ce66"
+              v-model="scope.row.deleteFlag"
               inactive-color="#ff4949"
-              active-value="0"
-              inactive-value="1" >
+              active-value=0
+              active-text="有效"
+              inactive-text	= "无效"
+              inactive-value=1
+              @change="changeSwitch(scope.row)" >
             </el-switch>
           </template>
         </el-table-column>
@@ -88,10 +90,16 @@ import {getUsers} from '@/api/user'
 export default {
   data() {
     return {
+      // 实现单选选中效果
+      radio: '', 
       editVisible: false,
       users: [],
+      cur_page: 1,
+      total: 0,
+      pageNum: 1,
+      pagesize: 10,
       formData : {
-        loginAccount: '',
+        loginName: '',
         userName: '',
         email: ''
       }
@@ -110,6 +118,11 @@ export default {
       this.pageNum = val;
       this.search();
     },
+    // 单选效果
+    onRowClick(row, index) {
+      this.radio = this.users.indexOf(row);
+      this.selected= row;
+    },
     // 搜索
     search() {
       var page = new Object();
@@ -117,10 +130,10 @@ export default {
       page.pageSize = this.pagesize;
       
       let data = {page: page, 
-        userCode: this.formData.userCode, 
-        userName: this.formData.userCode, 
+        loginName: this.formData.loginName, 
+        userName: this.formData.userName, 
         email: this.formData.email
-        }
+      }
       getUsers(data).then(response => {
         
         let success = response.success;
@@ -137,6 +150,9 @@ export default {
         }
         
       })
+    },
+    changeSwitch(row) {
+      console.log(row)
     },
     resetQuery() {
       this.formData = {
