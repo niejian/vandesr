@@ -81,12 +81,12 @@ public interface IVandesrUserService extends IService<VandesrUser> {
      * 分页获取用户信息
      * @param userName
      * @param loginName
-     * @param eamil
+     * @param email
      * @param page
      * @return
      * @throws Exception
      */
-    IPage<VandesrUser> getUsers(String userName, String loginName, String eamil, Page<VandesrUser> page) throws Exception;
+    IPage<VandesrUser> getUsers(String userName, String loginName, String email, Page<VandesrUser> page) throws Exception;
 
 
     /**

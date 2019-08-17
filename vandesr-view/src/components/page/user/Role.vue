@@ -70,7 +70,7 @@
       </div>
 
 <!--      弹出编辑页面-->
-      <el-dialog :title="title" :closeOnClickModal="closeOnClickModal" :visible.sync="editVisible" width="30%">
+      <el-dialog :title="title" closeOnClickModal="closeOnClickModal" :visible.sync="editVisible" width="30%">
         <el-form ref="formData" :model="formData" :rules="rules" label-width="150px">
           <el-form-item label="角色编码" prop="roleCode">
             <el-input v-model="formData.roleCode" :readonly="isReadOnly"></el-input>
@@ -96,11 +96,11 @@ export default {
   data: function() {
     return {
       isReadOnly: true,
+      closeOnClickModal: false,
       title: '编辑',
       isShow: false,
       radio: '',
 		  selected:{},
-      closeOnClickModal: false,
       // 弹出编辑页面
       editVisible: false,
       roles: [],
@@ -163,6 +163,8 @@ export default {
       this.selected= row;
     },
     search() {
+      this.selected = {}
+      this.selectedId = ''
       var page = new Object();
       page.pageNum = this.pageNum;
       page.pageSize = this.pagesize;
@@ -291,7 +293,11 @@ export default {
         roleCode: '',
         roleName: '',
         id: ''
-      }
+      },
+      this.selected = {}
+      this.selectedId = ''
+       //单选效果清空
+      this.onRowClick()
     },
     // 删除
     handleDelete() {

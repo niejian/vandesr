@@ -63,7 +63,7 @@ export function removeUser(data) {
  */
 export function getUserRoleInfo(data) {
   return request({
-    url: '/user/getUserRole',
+    url: '/userRole/list',
     method: 'post',
     data
   })

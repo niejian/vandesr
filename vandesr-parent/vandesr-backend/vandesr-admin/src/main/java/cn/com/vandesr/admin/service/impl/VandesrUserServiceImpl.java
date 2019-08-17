@@ -576,19 +576,27 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
      *
      * @param userName
      * @param loginName
-     * @param eamil
+     * @param email
      * @param page
      * @return
      * @throws Exception
      */
     @Override
-    public IPage<VandesrUser> getUsers(String userName, String loginName, String eamil, Page<VandesrUser> page) throws Exception {
+    public IPage<VandesrUser> getUsers(String userName, String loginName, String email, Page<VandesrUser> page) throws Exception {
         QueryWrapper<VandesrUser> queryWrapper = new QueryWrapper<>();
 
-        queryWrapper.like("user_name", userName)
-                .like("login_name", loginName)
-                .like("email", eamil);
-//                .eq("delete_flag", 0);
+        if (!StringUtils.isEmpty(userName)) {
+
+            queryWrapper.like("user_name", userName);
+        }
+
+        if (!StringUtils.isEmpty(loginName)) {
+            queryWrapper.like("login_name", loginName);
+        }
+
+        if (!StringUtils.isEmpty(email)) {
+            queryWrapper.like("email", email);
+        }
 
 
         return this.page(page, queryWrapper);

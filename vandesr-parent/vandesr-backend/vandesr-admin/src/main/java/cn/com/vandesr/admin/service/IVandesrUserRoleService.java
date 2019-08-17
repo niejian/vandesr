@@ -1,7 +1,10 @@
 package cn.com.vandesr.admin.service;
 
+import cn.com.vandesr.admin.entity.VandesrRole;
 import cn.com.vandesr.admin.entity.VandesrUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2019-01-25
  */
 public interface IVandesrUserRoleService extends IService<VandesrUserRole> {
+
+    /**
+     * 获取指定用户的所有角色信息
+     * @param userId
+     * @return
+     */
+    List<VandesrRole> getRoleList(String userId);
 
 }

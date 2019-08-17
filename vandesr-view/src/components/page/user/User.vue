@@ -81,7 +81,10 @@
       </div>
 
       <!-- 弹出编辑/查看页面 -->
-      <el-dialog :title="title" closeOnClickModal="false" :visible.sync="editVisible" width="30%">
+      <el-dialog :title="title" :closeOnClickModal="closeOnClickModal" 
+        :visible.sync="editVisible"
+        @close="closeDialog" 
+        width="30%">
         <el-form ref="formData" :model="formData" :rules="rules" label-width="150px">
           <el-input type="hidden" v-model="formData.id"></el-input>
 
@@ -115,14 +118,20 @@
 
   </div>
 </template>
-
+<style scoped>
+.toolbar {
+  padding-top: 10px;
+  padding-bottom: 10px
+}
+</style>
 <script>
-import {getUsers, removeUser} from '@/api/user'
+import {getUsers, removeUser, getUserRoleInfo} from '@/api/user'
 export default {
   data() {
     return {
       // 实现单选选中效果
       radio: '', 
+      closeOnClickModal: false,
       selected: {},
       editVisible: false,
       title: '查看',
@@ -138,7 +147,9 @@ export default {
         loginName: '',
         userName: '',
         email: ''
-      }
+      },
+      // 校验字段及规则
+      rules: {}
     }
   },
   methods: {
@@ -161,6 +172,8 @@ export default {
     },
     // 搜索
     search() {
+      this.selected = {}
+      this.selectedId = ''
       var page = new Object();
       page.pageNum = this.pageNum;
       page.pageSize = this.pagesize;
@@ -218,6 +231,8 @@ export default {
 
       };
       this.selected = {}
+      //单选效果清空
+      this.onRowClick()
       this.search()
     },
     // 查看用户信息
@@ -236,7 +251,21 @@ export default {
       this.formData = this.selected;
       let data = {userId: this.selected.id}
 
+      // 查询用户关联的角色信息
+      getUserRoleInfo(data).then(response =>{
+        let success = response.success;
+        let responseCode = response.responseCode;
+        if (success && 0 === responseCode) {
+          this.roles = response.data;
+        }
+      })
 
+
+    },
+    // 弹出框点击关闭回调
+    closeDialog() {
+      
+      this.resetQuery() 
     }
   },
   created() {

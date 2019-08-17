@@ -63,8 +63,6 @@ public class UserController {
     @Autowired
     private IVandesrUserService vandesrUserService;
 
-
-    @Transactional
     @PostMapping(value = "/register")
     public BaseResponse register(@RequestBody JSONObject jsonObject) {
         BaseResponse response = new BaseResponse();
