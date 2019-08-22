@@ -49,9 +49,9 @@ export function getUsers(data) {
  * 更新用户状态
  * @param {} data 
  */
-export function removeUser(data) {
+export function deleteUser(data) {
   return request({
-    url: '/user/getUsers',
+    url: '/user/deleteUser',
     method: 'post',
     data
   })  

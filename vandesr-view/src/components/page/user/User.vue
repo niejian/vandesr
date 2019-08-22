@@ -85,18 +85,18 @@
         :visible.sync="editVisible"
         @close="closeDialog" 
         width="30%">
-        <el-form ref="formData" :model="formData" :rules="rules" label-width="150px">
-          <el-input type="hidden" v-model="formData.id"></el-input>
+        <el-form ref="viewData" :model="viewData" :rules="rules" label-width="150px">
+          <el-input type="hidden" v-model="viewData.id"></el-input>
 
           <el-form-item label="昵称">
-            <el-input v-model="formData.loginName" :readyOnly="readyOnly" placeholder="昵称"></el-input>
+            <el-input v-model="viewData.loginName" :readyOnly="readyOnly" placeholder="昵称"></el-input>
 
           </el-form-item>
           <el-form-item label="用户名称">
-            <el-input v-model="formData.userName" :readyOnly="readyOnly" placeholder="用户名称"></el-input>
+            <el-input v-model="viewData.userName" :readyOnly="readyOnly" placeholder="用户名称"></el-input>
           </el-form-item>
           <el-form-item label="邮箱">
-            <el-input v-model="formData.email" :readyOnly="readyOnly" placeholder="邮箱"></el-input>
+            <el-input v-model="viewData.email" :readyOnly="readyOnly" placeholder="邮箱"></el-input>
           </el-form-item>
         </el-form>
 
@@ -125,7 +125,7 @@
 }
 </style>
 <script>
-import {getUsers, removeUser, getUserRoleInfo} from '@/api/user'
+import {getUsers, deleteUser, getUserRoleInfo} from '@/api/user'
 export default {
   data() {
     return {
@@ -143,6 +143,12 @@ export default {
       pageNum: 1,
       pagesize: 10,
       formData : {
+        id: '',
+        loginName: '',
+        userName: '',
+        email: ''
+      },
+      viewData : {
         id: '',
         loginName: '',
         userName: '',
@@ -203,28 +209,29 @@ export default {
     changeSwitch(row) {
       let userId = row.id;
       let deleteFlag = row.deleteFlag;
-      let data = {userId: userId, deleteFlag: deleteFlag}
-      removeUser(data).then(response => {
+      let data = {id: userId, deleteFlag: deleteFlag}
+      deleteUser(data).then(response => {
         let success = response.success;
         let responseCode = response.responseCode;
       
         if (success && responseCode === 0) {
-          this.$message({
-            type: 'success',
-            showClose: true,
-            message: '删除成功'
-          });
+          let msg = deleteFlag == 1 ? '删除成功' : '激活成功'
+          this.showAlert('success', msg)
+          this.search()
         }else {
-          this.$message({
-            type: 'error',
-            showClose: true,
-            message: '删除失败，请重试！'
-          });
+          this.showAlert('error', '删除失败，请重试！')
+    
         }
       })
     },
     resetQuery() {
       this.formData = {
+        loginAccount: '',
+        userName: '',
+        email: ''
+
+      };
+      this.viewData = {
         loginAccount: '',
         userName: '',
         email: ''
@@ -239,16 +246,12 @@ export default {
     handleView() {
       let selectedId = this.selected.id;
       if(!selectedId) {
-        this.$message({
-          type: 'warning',
-          showClose: true,
-          message: '请选择一条数据'
-        })
+        this.showAlert('warning', '请先选择一条数据')
         return false;
       }
 
       this.editVisible = true;
-      this.formData = this.selected;
+      this.viewData = this.selected;
       let data = {userId: this.selected.id}
 
       // 查询用户关联的角色信息
@@ -262,10 +265,39 @@ export default {
 
 
     },
+    // 绑定角色信息
+    handleEdit() {
+      let selectedId = this.selected.id;
+      this.title = '编辑'
+      if(!selectedId) {
+        this.showAlert('warning', '请先选择一条数据')
+        return false;
+      }
+
+      //检查用户状态
+      let deleteFlag = this.selected.deleteFlag;
+      if (1 === deleteFlag) {
+        this.showAlert('warning', '请先激活用户再编辑')
+        return false;
+      }
+
+      this.editVisible = true;
+      this.viewData = this.selected;
+      let data = {userId: this.selected.id}
+      
+    },
     // 弹出框点击关闭回调
     closeDialog() {
-      
       this.resetQuery() 
+    },
+    //弹出提示信息
+    showAlert(type, msg) {
+      this.$message({
+          type: type,
+          showClose: true,
+          message: msg
+        })
+        return false;
     }
   },
   created() {

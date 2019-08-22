@@ -326,6 +326,7 @@ export default {
     },
     // 删除
     deleteRole(row) {
+      debugger
       this.formData.id = row.id;
       this.formData.type = 'del';
       // 删除操作

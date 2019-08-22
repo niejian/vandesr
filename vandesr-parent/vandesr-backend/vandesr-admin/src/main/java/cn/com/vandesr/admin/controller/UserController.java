@@ -314,12 +314,15 @@ public class UserController {
                 responseMsg = "请选择一条数据";
             }
 
-            // 帐号中必须至少有一条是Sysadmin
-            this.vandesrUserService.removeUser(userId, deleteFlag);
+            if (isContinue) {
+                // 帐号中必须至少有一条是Sysadmin
+                this.vandesrUserService.removeUser(userId, deleteFlag);
 
-            responseMsg = CommonInstance.SUCCESS_MSG;
-            responseCode = CommonInstance.SUCCESS_CODE;
-            isSuccess = CommonInstance.SUCCESS;
+                responseMsg = CommonInstance.SUCCESS_MSG;
+                responseCode = CommonInstance.SUCCESS_CODE;
+                isSuccess = CommonInstance.SUCCESS;
+            }
+
         } catch (Exception e) {
             CommonFunction.genErrorMessage(log, e);
             e.printStackTrace();
