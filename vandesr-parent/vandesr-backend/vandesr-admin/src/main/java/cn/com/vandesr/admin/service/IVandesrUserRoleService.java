@@ -1,6 +1,7 @@
 package cn.com.vandesr.admin.service;
 
 import cn.com.vandesr.admin.entity.VandesrRole;
+import cn.com.vandesr.admin.entity.VandesrUser;
 import cn.com.vandesr.admin.entity.VandesrUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -22,5 +23,13 @@ public interface IVandesrUserRoleService extends IService<VandesrUserRole> {
      * @return
      */
     List<VandesrRole> getRoleList(String userId);
+
+    /**
+     * 更新用户角色信息
+     * @param user
+     * @param roleIdList
+     * @throws Exception
+     */
+    boolean updateUserRole(VandesrUser user, List<Integer> roleIdList, String updateUser) throws Exception;
 
 }

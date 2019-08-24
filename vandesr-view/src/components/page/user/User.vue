@@ -83,7 +83,8 @@
       <!-- 弹出编辑/查看页面 -->
       <el-dialog :title="title" :closeOnClickModal="closeOnClickModal" 
         :visible.sync="editVisible"
-        @close="closeDialog" 
+        @close="closeDialog"
+        @open="openDialog"
         width="30%">
         <el-form ref="viewData" :model="viewData" :rules="rules" label-width="150px">
           <el-input type="hidden" v-model="viewData.id"></el-input>
@@ -98,9 +99,20 @@
           <el-form-item label="邮箱">
             <el-input v-model="viewData.email" :readyOnly="readyOnly" placeholder="邮箱"></el-input>
           </el-form-item>
+           <!-- 显示角色信息 -->
+          <el-form-item label="用户角色信息">
+            <el-checkbox-group v-model="checkedRoles">
+              <el-checkbox v-for="role in roles" :label="role.id" :key="role.id">{{role.roleName}}</el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
         </el-form>
+        <span slot="footer" v-if="title !== '查看'" class="dialog-footer">
+          <el-button @click="cancelBtn('')">取 消</el-button>
+          <el-button type="primary" @click="saveEdit()">确 定</el-button>
+        </span>
 
         <!-- 该用户所绑定的角色信息 -->
+        <!-- 
         <el-table 
           class="table"
           :data="roles"
@@ -110,6 +122,8 @@
           <el-table-column label="角色编码" prop="roleCode" align="center"></el-table-column>
           <el-table-column label="角色名称" prop="roleName" align="center"></el-table-column>
         </el-table>
+        -->
+       
 
       </el-dialog>
 
@@ -125,7 +139,7 @@
 }
 </style>
 <script>
-import {getUsers, deleteUser, getUserRoleInfo} from '@/api/user'
+import {getUsers, deleteUser, getRoleList, getUserRoleInfo, updateUserRole} from '@/api/user'
 export default {
   data() {
     return {
@@ -137,6 +151,7 @@ export default {
       title: '查看',
       users: [],
       roles: [],
+      checkedRoles:[],
       readyOnly: false,
       cur_page: 1,
       total: 0,
@@ -178,6 +193,7 @@ export default {
     },
     // 搜索
     search() {
+      this.onRowClick()
       this.selected = {}
       this.selectedId = ''
       var page = new Object();
@@ -253,18 +269,53 @@ export default {
       this.editVisible = true;
       this.viewData = this.selected;
       let data = {userId: this.selected.id}
-
+      //获取用户绑定的角色信息
+      this.getUserRole(data);
+      
+    },
+    // 查询用户关联的角色信息
+    getUserRole(data) {
       // 查询用户关联的角色信息
       getUserRoleInfo(data).then(response =>{
         let success = response.success;
         let responseCode = response.responseCode;
         if (success && 0 === responseCode) {
-          this.roles = response.data;
+          // this.checkedRoles = response.data;
+          for (let i = 0 ; i < response.data.length; i++) {
+              this.checkedRoles.push(response.data[i].id)
+
+          }
         }
       })
 
-
     },
+
+    // 获取所有角色信息
+    getRoles() {
+      let page = new Object();
+      page.pageNum = this.pageNum;
+      page.pageSize = this.pagesize;
+      let role = new Object();
+      let data = {page: page, role: role}
+      //let data = JSON.stringify(param);
+      getRoleList(data).then(response => {
+        
+        let success = response.success;
+        let responseCode = response.responseCode;
+        if (success && responseCode === 0) {
+          let records = response.data.records;
+          // 总记录数
+          this.total = response.data.total;
+          // 当前页数
+          this.cur_page = response.data.current;
+          if (records && records.length > 0) {
+            this.roles = records;
+          }
+        }
+        
+      })
+    },
+
     // 绑定角色信息
     handleEdit() {
       let selectedId = this.selected.id;
@@ -283,12 +334,45 @@ export default {
 
       this.editVisible = true;
       this.viewData = this.selected;
-      let data = {userId: this.selected.id}
+      //获取用户绑定的角色信息
+      this.getUserRole({userId: this.selected.id});
       
+    },
+    // 保存操作
+    saveEdit() {
+      //给用户绑定角色信息
+      // let roleLength = this.checkedRoles.length;
+      // if(!roleLength) {
+      //   this.showAlert('error', '请至少给用户绑定一个角色');
+      //   return false;
+      // }
+      
+      let data = {userId: this.selected.id, roleIds: this.roleLength};
+
+      updateUserRole(data).then(response => {
+        let success = response.success;
+        let responseCode = response.responseCode;
+        if (success && responseCode === 0) {
+          this.showAlert('success', '编辑成功');
+          this.cancelBtn()
+        }else {
+          this.showAlert('error', response.responseMsg);
+        }
+
+      }).catch(err => {
+        console.log(err)
+      })
     },
     // 弹出框点击关闭回调
     closeDialog() {
       this.resetQuery() 
+    },
+    openDialog() {
+      this.getRoles();
+    },
+    cancelBtn() {
+      this.editVisible = false;
+      this.search();
     },
     //弹出提示信息
     showAlert(type, msg) {

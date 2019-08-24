@@ -27,6 +27,8 @@
     import md5 from 'js-md5'
     import {addSessionData} from '@/utils/storeUtil'
     import {login} from  '@/api/user'
+    import NProgress from 'nprogress'
+    import 'nprogress/nprogress.css'
     var routers = []
     export default {
       
@@ -54,6 +56,7 @@
                   let token = '';
                   let menuRouters = [];
                     if (valid) {
+                      NProgress.start()
                       login({
                         'email': this.ruleForm.username,
                         'password': md5(this.ruleForm.password)
@@ -80,6 +83,7 @@
                             addSessionData('menuRouters',JSON.stringify(menuRouters))
                             addSessionData('ms_username',this.ruleForm.username);
                             this.$router.push('/');
+                            NProgress.stop()
                           }
                        })
 

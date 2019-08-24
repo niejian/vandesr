@@ -68,3 +68,15 @@ export function getUserRoleInfo(data) {
     data
   })
 }
+
+/**
+ * 编辑用户角色信息
+ * @param {*} data 
+ */
+export function updateUserRole(data) {
+  return request({
+    url: '/userRole/updateUserRole',
+    method: 'post',
+    data
+  })
+}

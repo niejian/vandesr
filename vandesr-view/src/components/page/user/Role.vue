@@ -165,10 +165,10 @@ export default {
     search() {
       this.selected = {}
       this.selectedId = ''
-      var page = new Object();
+      let page = new Object();
       page.pageNum = this.pageNum;
       page.pageSize = this.pagesize;
-      var role = new Object();
+      let role = new Object();
       role.roleCode = this.formInline.roleCode;
       role.roleName = this.formInline.roleName;
 
