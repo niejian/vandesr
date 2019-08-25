@@ -260,6 +260,7 @@ export default {
     },
     // 查看用户信息
     handleView() {
+      this.checkedRoles = [];
       let selectedId = this.selected.id;
       if(!selectedId) {
         this.showAlert('warning', '请先选择一条数据')
@@ -318,6 +319,7 @@ export default {
 
     // 绑定角色信息
     handleEdit() {
+      this.checkedRoles = [];
       let selectedId = this.selected.id;
       this.title = '编辑'
       if(!selectedId) {
@@ -347,7 +349,7 @@ export default {
       //   return false;
       // }
       
-      let data = {userId: this.selected.id, roleIds: this.roleLength};
+      let data = {userId: this.selected.id, roleIds: this.checkedRoles};
 
       updateUserRole(data).then(response => {
         let success = response.success;

@@ -14,7 +14,8 @@
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
-                    <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+                    <el-button type="primary" @click="submitForm('ruleForm')" v-loading="loading" 
+                      element-loading-text="登录中....请稍候">登录</el-button>
                 </div>
                 <p class="login-tips">Tips : 用户名和密码随便填。</p>
             </el-form>
@@ -35,6 +36,7 @@
         data: function(){
           
             return {
+                loading: false,
                 ruleForm: {
                     username: 'code4fun@qq.com',
                     password: 'qq123123'
@@ -56,12 +58,14 @@
                   let token = '';
                   let menuRouters = [];
                     if (valid) {
-                      NProgress.start()
+                      NProgress.start();
+                      this.loading = true;
                       login({
                         'email': this.ruleForm.username,
                         'password': md5(this.ruleForm.password)
                        }).then(response => {
-                         
+                        
+                         this.loading = false
                          token = response.data.token;
                           menus = response.data.menusTree;
                           menuRouters = response.data.leafMenus;
@@ -82,9 +86,11 @@
                             addSessionData('menuTrees', JSON.stringify(menus))
                             addSessionData('menuRouters',JSON.stringify(menuRouters))
                             addSessionData('ms_username',this.ruleForm.username);
-                            this.$router.push('/');
-                            NProgress.stop()
+                            
                           }
+                          this.$router.push('/');
+
+                          NProgress.done()
                        })
 
 

@@ -36,10 +36,10 @@ export default new Router({
                   meta: { title: '403' }
               },
               {
-                  path: '/form',
-                  component: resolve => require(['../components/page/form.vue'], resolve),
-                  title: 'form',
-                  meta: { title: 'form' }
+                  path: '/menu',
+                  component: resolve => require(['../components/page/user/Menu.vue'], resolve),
+                  title: '菜单管理',
+                  meta: { title: '菜单管理' }
               },
               {
                 path: '/forms',
