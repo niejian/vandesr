@@ -23,14 +23,14 @@
                 v-if="subItem.hasChildren"
                 :index="subItem.routerPath"
                 :key="subItem.menuId"
-                :route="{'path': '/' + subItem.menuCode}"
+                :route="{'path': subItem.routerPath}"
               >
                 <template slot="title">{{ subItem.title }}</template>
                 <el-menu-item
                   v-for="(threeItem, i) in subItem.children"
                   :key="i"
                   :index="threeItem.routerPath"
-                  :route="{'path': '/' + threeItem.menuCode}"
+                  :route="{'path': threeItem.routerPath}"
                 >
                   {{ threeItem.title }}
                 </el-menu-item>
@@ -40,7 +40,7 @@
                 v-else
                 :index="subItem.routerPath"
                 :key="subItem.menuId"
-                :route="{'path': '/' + subItem.menuCode}"
+                :route="{'path': subItem.routerPath}"
               >
                 {{ subItem.title }}
               </el-menu-item>
@@ -49,7 +49,7 @@
         </template>
         <template v-else>
           <!-- <el-menu-item :index="item.routerPath" :key="item.menuId" :router='!item.hasChildren'> -->
-          <el-menu-item :index="item.routerPath" :key="item.menuId" :route="{'path': '/' + subItem.menuCode}">
+          <el-menu-item :index="item.routerPath" :key="item.menuId" :route="{'path': '/' + item.routerPath}">
             <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
           </el-menu-item>
         </template>

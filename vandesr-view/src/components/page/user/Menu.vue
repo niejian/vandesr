@@ -86,7 +86,10 @@
         </el-form-item>
         <el-form-item label="是否叶子节点" prop="hasChildren">
           <!-- <el-input v-model="menuDetail.hasChildren" :disabled="disabled"></el-input> -->
-          <el-select v-model="menuDetail.hasChildren" clearable placeholder="请选择" :disabled="disabled">
+          <el-select v-model="menuDetail.hasChildren" clearable 
+            placeholder="请选择"
+            @change="selectChange" 
+            :disabled="disabled">
             <el-option
               v-for="item in hasChildren"
               :key="item.value"
@@ -95,13 +98,13 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="菜单图标" >
+        <el-form-item label="菜单图标" v-show="iconShow">
           <el-input v-model="menuDetail.icon" :disabled="disabled"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeDialog">取 消</el-button>
-        <el-button type="primary" v-if="title !== '查看'" @click="saveEdit('formData')">确 定</el-button>
+        <el-button type="primary" v-if="title !== '查看'" @click="saveEdit">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -122,23 +125,32 @@
 } */
 </style>
 <script>
-import {getSystemMenus, getMenuInfo} from '@/api/user'
+import {getSystemMenus, getMenuInfo, addMenuInfo} from '@/api/user'
 // import MenuTree  from '@/components/page/user/MenuTree.vue'
 
 export default {
 
   data() {
     const isValidMenuName = (rule, value, callback) => {
-      console.log(value);
+      let field = rule.field;
+      let menuNameRequestData = {menuName: value};
+      let menuCodeRequestData = {menuCode: value};
+      let requestData = menuNameRequestData;
+      let alertMsg = '菜单名称';
+      if('menuCode' === field) {
+        requestData = menuCodeRequestData;
+        alertMsg = '菜单编码';
+      }
       // 校验菜单名称是否唯一
       if (value) {
-        getMenuInfo({id: menuId}).then(response => {
+
+        getMenuInfo(requestData).then(response => {
           let success = response.success;
           let responseCode = response.responseCode;
           let menu = response.data;
           // 能查到对应的menu信息
           if (success && responseCode === 0 && menu) {
-             callback(new Error('菜单名称重复，请重新输入'))
+             callback(new Error(alertMsg + '重复，请重新输入'))
     
           }else{
              callback()
@@ -161,6 +173,7 @@ export default {
           label: '是'
         }
       ],
+      iconShow: true,
       visible: false,
       closeOnClickModal: false,
       disabled: true,
@@ -178,9 +191,26 @@ export default {
           { required: true, message: '请输入菜单名称', trigger: 'blur' },
           {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' },
           // 菜单名称是否唯一
-          { validator: isValidMenuName, trigger: 'change' }
+          { validator: isValidMenuName, trigger: 'blur' }
 
         ],
+        menuCode: [
+          { required: true, message: '请输入菜单编码', trigger: 'blur' },
+          {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' },
+          // 菜单名称是否唯一
+          { validator: isValidMenuName, trigger: 'blur' }
+        ],
+        routerPath: [
+          { required: true, message: '请输入访问路由', trigger: 'blur' },
+          {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' }
+        ],
+        path: [
+         { required: true, message: '请输入页面路径', trigger: 'blur' },
+         {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' }
+        ],
+        hasChildren: [
+          { required: true, message: '请选择是否是叶子节点', trigger: 'blur' }
+        ]
       }
     }
   },
@@ -241,6 +271,7 @@ export default {
      // 
      this.visible = true;
     
+    
     },
     add() {
       let length = this.menuDetails.length;
@@ -253,10 +284,12 @@ export default {
         this.showAlert('warning', '添加菜单操作应该选择非叶子节点');
         return;
       }
+      this.title = '添加菜单';
       this.visible = true;
       this.disabled = false;
+
       let parentIds = this.menuDetail.parentIds;
-      let parentId = this.menuDetail.parentId;
+      let parentId = this.menuDetail.menuId;
       let parentMenuName = this.menuDetail.parentMenuName;
       let parentMenuCode = this.menuDetail.parentMenuCode;
       this.menuDetail = {};
@@ -268,8 +301,24 @@ export default {
 
     },
     // 添加菜单逻辑处理
-    hanleAddMenu() {
-      // 校验菜单名称，编码是否唯一
+    saveEdit() {
+      this.$refs['viewData'].validate((valid) => {
+        if (valid) {
+          addMenuInfo(this.menuDetail).then(response => {
+            let success = response.success;
+            let responseCode = response.responseCode;
+            if (success && responseCode === 0) {
+
+              this.showAlert('success', '菜单添加成功');
+              this.closeDialog()
+            }else {
+              this.showAlert('error', response.responseMsg);
+            }
+          }).catch(err => {
+            console.error('添加菜单失败')
+          })
+        }
+      })
     },
     onRowClick() {},
     //弹出提示信息
@@ -294,13 +343,27 @@ export default {
     openDialog() {
       
     },
+    selectChange(data) {
+     //是叶子节点 data = false; 图标不显示
+     if (!data) {
+      this.iconShow = false;
+      this.menuDetail.routerPath = '#'
+      this.menuDetail.path = '#'
+     }else {
+      this.iconShow = true;
+      this.menuDetail.routerPath = ''
+      this.menuDetail.path = ''
+     }
+    },
     refresh() {
       this.getSysMenus({});
       this.menuDetail = {};
       // 清空所有选中节点
       this.$refs.tree.setCheckedKeys([]);
       //清空表格信息
-      this.menuDetails = []
+      this.menuDetails = [];
+      this.title = '查看';
+      this.iconShow = true;
     }
    
   },

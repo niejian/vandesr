@@ -354,7 +354,7 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
                     MenuRouterVo vo = MenuRouterVo.builder()
                             .path(menu.getMenuUrl())
                             .title(menu.getMenuName())
-                            .component(menu.getMenuCode())
+                            .component(menu.getRouter())
                             .build();
                     list.add(vo);
                 }

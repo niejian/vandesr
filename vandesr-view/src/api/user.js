@@ -105,13 +105,9 @@ export function getMenuInfo(data) {
   })
 }
 
-/**
- * 通过名称或编码获取菜单信息
- * @param {menuCode: xxx, menuName:xxx} data 
- */
-export function getMenuByCodeOrName(data) {
+export function addMenuInfo(data) {
   return request({
-    url: '/user/menu/getMenuByCodeOrName',
+    url: '/user/menu/addMenuInfo',
     method: 'post',
     data
   })
