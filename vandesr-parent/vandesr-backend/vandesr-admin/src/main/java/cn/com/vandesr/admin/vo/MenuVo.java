@@ -37,6 +37,7 @@ public class MenuVo implements Serializable {
     private boolean hasChildren = false;
     /**路由路径*/
     private String routerPath;
+    private String parentIds;
 
 
     /**

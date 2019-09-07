@@ -80,3 +80,35 @@ export function updateUserRole(data) {
     data
   })
 }
+
+/**
+ * 获取系统菜单信息
+ * @param {data} data 
+ */
+export function getSystemMenus(data) {
+  return request({
+    url: '/user/menu/getSystemMenus',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 获取指定菜单的详细信息
+ * @param {id:''，menuCode: xxx, menuName:xxx} data 
+ */
+export function getMenuInfo(data) {
+  return request({
+    url: '/user/menu/getMenuInfo',
+    method: 'post',
+    data
+  })
+}
+
+export function addMenuInfo(data) {
+  return request({
+    url: '/user/menu/addMenuInfo',
+    method: 'post',
+    data
+  })
+}

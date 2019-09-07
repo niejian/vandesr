@@ -70,7 +70,7 @@
       </div>
 
 <!--      弹出编辑页面-->
-      <el-dialog :title="title" closeOnClickModal="closeOnClickModal" :visible.sync="editVisible" width="30%">
+      <el-dialog :title="title" closeOnClickModal="false" :visible.sync="editVisible" width="30%">
         <el-form ref="formData" :model="formData" :rules="rules" label-width="150px">
           <el-form-item label="角色编码" prop="roleCode">
             <el-input v-model="formData.roleCode" :readonly="isReadOnly"></el-input>
