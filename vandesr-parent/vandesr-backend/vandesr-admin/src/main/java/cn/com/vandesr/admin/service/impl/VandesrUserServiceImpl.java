@@ -242,6 +242,9 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
                     String[] parentIdArr = parentIds.split(",");
                     parentIdSet.addAll(Arrays.asList(parentIdArr));
                 }
+                if (!menu.isLeaf()) {
+                    parentIdSet.add(menu.getId() + "");
+                }
             }
 
             list = getMenuTree(uniqueMenuIdSet, parentIdSet);

@@ -99,4 +99,5 @@ public class VandesrMenu implements Serializable {
         return Objects.hash(id, menuCode, menuName, menuIcon, menuUrl, parentId, parentIds,
                 permissions, deleteFlag, createDate, createUserCode, createUserName, updateDate, updateUserCode, updateUserName);
     }
+
 }

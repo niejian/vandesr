@@ -3,22 +3,17 @@ package cn.com.vandesr.admin.controller;
 import cn.com.vandesr.admin.entity.VandesrMenu;
 import cn.com.vandesr.admin.service.IVandesrMenuService;
 import cn.com.vandesr.admin.service.IVandesrUserService;
-import cn.com.vandesr.admin.vo.MenuRouterVo;
 import cn.com.vandesr.admin.vo.MenuVo;
 import cn.com.vandesr.backend.common.CommonFunction;
 import cn.com.vandesr.backend.common.dto.BaseResponseDto;
 import cn.com.vandesr.backend.common.instance.CommonInstance;
 import cn.com.vandesr.backend.config.security.JwtUser;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import sun.plugin.javascript.JSObject;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -114,15 +109,19 @@ public class MenuController {
     }
 
 
-
-    @PostMapping(value = "/addMenuInfo")
-    public BaseResponseDto<String> addMenuInfo( @RequestBody JSONObject jsonObject) {
+    /**
+     * 添加或删除菜单信息
+     * @param json
+     * @return
+     */
+    @PostMapping(value = "/handleAddOrUpdate")
+    public BaseResponseDto<String> handleAddOrUpdate( @RequestBody JSONObject json) {
         BaseResponseDto<String> baseResponseDto = new BaseResponseDto<>();
         Boolean isSuccess = false;
         String responseMsg = "请求失败";
         Integer responseCode = -1;
         Boolean isContinue = true;
-        CommonFunction.beforeProcess(log, jsonObject);
+        CommonFunction.beforeProcess(log, json);
 
         try {
 
@@ -132,6 +131,14 @@ public class MenuController {
                 isContinue = false;
                 responseMsg = "登录过期，请重新登录";
             }
+
+            JSONObject jsonObject = json.optJSONObject("data");
+            if (null == jsonObject) {
+                isContinue = false;
+                responseMsg = "请选择对应的数据信息";
+            }
+
+            String type = json.optString("type", "add");
 
             String loginUserName = "";
             if (isContinue) {
@@ -147,8 +154,16 @@ public class MenuController {
             }
 
             if (isContinue) {
-                VandesrMenu q = this.menuService.getMenuByMenuNameOrMenuCode(null, menuCode);
-                if (null != q) {
+                VandesrMenu queryData = this.menuService.getMenuByMenuNameOrMenuCode(null, menuCode);
+                int menuId = jsonObject.optInt("menuId", -1);
+                if (null != queryData && -1 == menuId) {
+                    // 新增
+                    isContinue = false;
+                    responseMsg = "菜单编码已存在，请重新输入";
+                }
+
+                if (null != queryData && menuId != queryData.getId() ) {
+                    // 编辑
                     isContinue = false;
                     responseMsg = "菜单编码已存在，请重新输入";
                 }
@@ -164,13 +179,13 @@ public class MenuController {
                 }
             }
 
-            if (isContinue) {
-                VandesrMenu q = this.menuService.getMenuByMenuNameOrMenuCode(menuName, null);
-                if (null != q) {
-                    isContinue = false;
-                    responseMsg = "菜单名称已存在，请重新输入";
-                }
-            }
+//            if (isContinue) {
+//                VandesrMenu q = this.menuService.getMenuByMenuNameOrMenuCode(menuName, null);
+//                if (null != q) {
+//                    isContinue = false;
+//                    responseMsg = "菜单名称已存在，请重新输入";
+//                }
+//            }
 
             String parentId = null;
 
@@ -228,8 +243,12 @@ public class MenuController {
                         .updateUserName(loginUserName)
                         .build();
 
+                if (!"add".equals(type)) {
+                    menu.setId(jsonObject.optInt("menuId"));
+                }
+
                 if (null != menu) {
-                    this.menuService.addMenu(menu);
+                    this.menuService.addOrUpdateMenu(menu);
                     responseMsg = CommonInstance.SUCCESS_MSG;
                     responseCode = CommonInstance.SUCCESS_CODE;
                     isSuccess = CommonInstance.SUCCESS;
@@ -250,5 +269,49 @@ public class MenuController {
                 .data(responseMsg);
     }
 
+    @PostMapping(value = "/delMenu")
+    public BaseResponseDto<String> delMenu(@RequestBody JSONObject jsonObject) {
+        BaseResponseDto<String> baseResponseDto = new BaseResponseDto<>();
+        Boolean isSuccess = false;
+        String responseMsg = "请求失败";
+        Integer responseCode = -1;
+        Boolean isContinue = true;
+        VandesrMenu menu = null;
+        CommonFunction.beforeProcess(log, jsonObject);
+
+        try {
+            String menuId = jsonObject.optString("menuId", null);
+            if (null == menuId) {
+                isContinue = false;
+                responseMsg = "请选择一条数据进行操作";
+            }
+
+            // 获取当前登录人信息
+            JwtUser loginUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (null == loginUser) {
+                isContinue = false;
+                responseMsg = "登录过期，请重新登录";
+            }
+
+            String loginUserCode = "";
+
+            if (isContinue) {
+                loginUserCode = loginUser.getUsername();
+                this.menuService.deleteMenu(menuId, loginUserCode);
+                responseMsg = CommonInstance.SUCCESS_MSG;
+                responseCode = CommonInstance.SUCCESS_CODE;
+                isSuccess = CommonInstance.SUCCESS;
+            }
+
+        } catch (Exception e) {
+            CommonFunction.genErrorMessage(log, e);
+            e.printStackTrace();
+        }
+
+        return baseResponseDto.responseCode(responseCode)
+                .responseMsg(responseMsg)
+                .success(isSuccess)
+                .data(responseMsg);
+    }
 
 }

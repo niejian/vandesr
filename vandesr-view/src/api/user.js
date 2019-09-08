@@ -105,9 +105,21 @@ export function getMenuInfo(data) {
   })
 }
 
-export function addMenuInfo(data) {
+export function addOrUpdateMenuInfo(data) {
   return request({
-    url: '/user/menu/addMenuInfo',
+    url: '/user/menu/handleAddOrUpdate',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 删除菜单信息
+ * @param {menuId:xx} data 
+ */
+export function delMenu(data) {
+  return request({
+    url: '/user/menu/delMenu',
     method: 'post',
     data
   })

@@ -22,7 +22,9 @@
             node-key="menuId"
             ref="tree"
             highlight-current
-            :props="defaultProps" @node-click="handleNodeClick">
+            :props="defaultProps"
+            @node-click="handleNodeClick"
+            @check-change="clickChange">
           </el-tree>
         </div>
         
@@ -75,7 +77,7 @@
   
         </el-form-item>
         <el-form-item label="菜单编码" prop="menuCode">
-          <el-input v-model="menuDetail.menuCode" :disabled="disabled"></el-input>
+          <el-input v-model="menuDetail.menuCode" :disabled="menuCodeDisabled"></el-input>
         </el-form-item>
 
         <el-form-item label="访问路由" prop="routerPath">
@@ -86,7 +88,7 @@
         </el-form-item>
         <el-form-item label="是否叶子节点" prop="hasChildren">
           <!-- <el-input v-model="menuDetail.hasChildren" :disabled="disabled"></el-input> -->
-          <el-select v-model="menuDetail.hasChildren" clearable 
+          <el-select v-model="menuDetail.hasChildren"  
             placeholder="请选择"
             @change="selectChange" 
             :disabled="disabled">
@@ -104,7 +106,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeDialog">取 消</el-button>
-        <el-button type="primary" v-if="title !== '查看'" @click="saveEdit">确 定</el-button>
+        <el-button type="primary" v-if="title !== '查看'" @click="saveEdit()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -125,7 +127,7 @@
 } */
 </style>
 <script>
-import {getSystemMenus, getMenuInfo, addMenuInfo} from '@/api/user'
+import {getSystemMenus, getMenuInfo, addOrUpdateMenuInfo, delMenu} from '@/api/user'
 // import MenuTree  from '@/components/page/user/MenuTree.vue'
 
 export default {
@@ -136,7 +138,7 @@ export default {
       let menuNameRequestData = {menuName: value};
       let menuCodeRequestData = {menuCode: value};
       let requestData = menuNameRequestData;
-      let alertMsg = '菜单名称';
+      let alertMsg = '菜单名称'; 
       if('menuCode' === field) {
         requestData = menuCodeRequestData;
         alertMsg = '菜单编码';
@@ -150,7 +152,13 @@ export default {
           let menu = response.data;
           // 能查到对应的menu信息
           if (success && responseCode === 0 && menu) {
-             callback(new Error(alertMsg + '重复，请重新输入'))
+            let menuId = menu.id;
+            if (this.menuDetail.menuId && this.menuDetail.menuId == menuId) {
+              callback();
+            }else {
+              callback(new Error(alertMsg + '重复，请重新输入'));
+            }
+            
     
           }else{
              callback()
@@ -176,12 +184,14 @@ export default {
       iconShow: true,
       visible: false,
       closeOnClickModal: false,
+      menuCodeDisabled: false,
       disabled: true,
       readyOnly:true,
       title: '查看',
       menus: [],
       menuDetails: [],
       menuDetail: {},
+      menuDetailCopy: {},
       defaultProps: {
         children: 'children',
         label: 'name'
@@ -191,7 +201,7 @@ export default {
           { required: true, message: '请输入菜单名称', trigger: 'blur' },
           {min: 1, max: 64, message: '长度在64个字符内', trigger: 'blur' },
           // 菜单名称是否唯一
-          { validator: isValidMenuName, trigger: 'blur' }
+          //{ validator: isValidMenuName, trigger: 'blur' }
 
         ],
         menuCode: [
@@ -228,6 +238,14 @@ export default {
         }
         
       })
+    },
+    clickChange(data, isChecked, subData){
+      // console.log(data)
+      // if (isChecked) {
+      //   this.handleNodeClick(data);
+      // }else {
+      //   this.refresh()
+      // }
     },
     handleNodeClick(data) {
       this.menuDetails = [];
@@ -304,12 +322,22 @@ export default {
     saveEdit() {
       this.$refs['viewData'].validate((valid) => {
         if (valid) {
-          addMenuInfo(this.menuDetail).then(response => {
+          let msg = '菜单添加成功';
+          let requestData = {};
+          if (this.title === '添加菜单') {
+            requestData = {type: 'add', data: this.menuDetail};
+          }else if(this.title === '编辑菜单') {
+            requestData = {type: 'update', data: this.menuDetail};
+            msg = '菜单更新成功';
+          }
+          debugger
+          addOrUpdateMenuInfo(requestData).then(response => {
             let success = response.success;
             let responseCode = response.responseCode;
             if (success && responseCode === 0) {
-
-              this.showAlert('success', '菜单添加成功');
+             
+              
+              this.showAlert('success', msg);
               this.closeDialog()
             }else {
               this.showAlert('error', response.responseMsg);
@@ -317,8 +345,64 @@ export default {
           }).catch(err => {
             console.error('添加菜单失败')
           })
+          
         }
       })
+    },
+    handleAddOrUpdate() {
+      
+    },
+    edit() {
+      let length = this.menuDetails.length;
+      if (length <= 0) {
+        this.showAlert('warning', '请选择一个菜单信息进行操作');
+        return;
+      }
+
+      this.title = '编辑菜单';
+      this.menuCodeDisabled = true;
+      this.visible = true;
+      this.disabled = false;
+      
+
+    },
+    del() {
+      let length = this.menuDetails.length;
+      if (length <= 0) {
+        this.showAlert('warning', '请选择一个菜单信息进行操作');
+        return;
+      }
+      let hasChildren = this.menuDetail.hasChildren;
+      let msg = '请确认是否删除此菜单';
+      if (hasChildren) {
+         msg = '此菜单为非叶子菜单，如果删除，子菜单也将被删除';
+      }
+
+      this.$confirm(msg + ', 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          delMenu(this.menuDetail).then(res => {
+            
+            let success = res.success;
+            let responseCode = res.responseCode;
+            if (success && responseCode === 0) {
+              this.showAlert('success', "删除成功")
+            }else{
+              this.showAlert('error', res.responseMsg)
+            }
+            this.refresh();
+          }).catch(err => {
+            console.error("菜单删除失败，请重试");
+          })
+          
+        }).catch(() => {
+          // this.$message({
+          //   type: 'info',
+          //   message: '已取消删除'
+          // });          
+        });
     },
     onRowClick() {},
     //弹出提示信息
@@ -349,7 +433,7 @@ export default {
       this.iconShow = false;
       this.menuDetail.routerPath = '#'
       this.menuDetail.path = '#'
-     }else {
+     } else if (data) {
       this.iconShow = true;
       this.menuDetail.routerPath = ''
       this.menuDetail.path = ''
@@ -364,6 +448,7 @@ export default {
       this.menuDetails = [];
       this.title = '查看';
       this.iconShow = true;
+      this.menuCodeDisabled = false;
     }
    
   },
