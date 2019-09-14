@@ -8,6 +8,8 @@ import cn.com.vandesr.backend.common.CommonFunction;
 import cn.com.vandesr.backend.common.dto.BaseResponseDto;
 import cn.com.vandesr.backend.common.instance.CommonInstance;
 import cn.com.vandesr.backend.config.security.JwtUser;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -227,6 +229,7 @@ public class MenuController {
 
 
             if (isContinue) {
+                String updateParentIds = parentIds + "," + parentId;
                 VandesrMenu menu = VandesrMenu.builder().menuCode(menuCode).menuIcon(icon)
                         .menuName(menuName)
                         .menuUrl(path)
@@ -236,7 +239,7 @@ public class MenuController {
                         .deleteFlag(0)
                         .leaf(!hasChildren)
                         .parentId(Integer.parseInt(parentId))
-                        .parentIds(parentIds + "," + parentId)
+                        .parentIds(updateParentIds)
                         .router(router)
                         .updateDate(new Date())
                         .updateUserCode(loginUserName)
@@ -244,7 +247,20 @@ public class MenuController {
                         .build();
 
                 if (!"add".equals(type)) {
-                    menu.setId(jsonObject.optInt("menuId"));
+                    Integer menuId = jsonObject.optInt("menuId", -1);
+                    if (menuId > 0) {
+                        QueryWrapper<VandesrMenu> queryWrapper = new QueryWrapper<>();
+                        queryWrapper.eq("id", menuId)
+                                .eq("delete_flag", 0);
+                        List<VandesrMenu> queryEntitys = this.menuService.list(queryWrapper);
+                        Assert.notNull(queryEntitys, "更新的菜单信息不存在");
+                        // 付菜单没变，不用管
+                        if (Integer.parseInt(parentId) == queryEntitys.get(0).getParentId()) {
+                            menu.setParentIds(queryEntitys.get(0).getParentIds());
+                        }
+                        menu.setId(menuId);
+
+                    }
                 }
 
                 if (null != menu) {

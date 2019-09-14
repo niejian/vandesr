@@ -138,17 +138,26 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
     @Override
     public List<MenuVo> getSystemMenuTree() throws Exception {
         // 获取所有角色信息
-        QueryWrapper<VandesrRole> queryWrapper = new QueryWrapper<>();
+//        QueryWrapper<VandesrRole> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("delete_flag", 0);
+//        List<VandesrRole> roleList = this.roleService.list(queryWrapper);
+//        List<MenuVo> list = null;
+//        if (!CollectionUtils.isEmpty(roleList)) {
+//            List<Integer> roleIds = new ArrayList<>();
+//            roleList.forEach(r -> {
+//                roleIds.add(r.getId());
+//            });
+//            list = this.getMenuTreeByRoleIdList(roleIds);
+//        }
+        QueryWrapper<VandesrMenu> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("delete_flag", 0);
-        List<VandesrRole> roleList = this.roleService.list(queryWrapper);
-        List<MenuVo> list = null;
-        if (!CollectionUtils.isEmpty(roleList)) {
-            List<Integer> roleIds = new ArrayList<>();
-            roleList.forEach(r -> {
-                roleIds.add(r.getId());
-            });
-            list = this.getMenuTreeByRoleIdList(roleIds);
+        List<VandesrMenu> menus = this.menuService.list(queryWrapper);
+        if (null == menus) {
+            menus = new ArrayList<>();
         }
+
+        List<MenuVo> list = this.getMenuTreeByMenus(menus);
+
         return list;
 
 
@@ -187,51 +196,36 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
         }
         list = this.getMenuTreeByRoleIdList(roleIdList);
         return list;
-//        roleMenus = getRoleMenuByRoleIds(roleIdList);
-//
-//        List<VandesrMenu> menus = null;
-//        if (isContinue && !CollectionUtils.isEmpty(roleMenus)) {
-//            menus = this.getMenu(roleMenus);
-//        }
-//        // 所有父节点id结合
-//        Set<String> parentIdSet = new HashSet<>();
-//
-//        if (null != menus) {
-//            for (VandesrMenu menu : menus) {
-//                uniqueMenuIdSet.add(menu.getId());
-//                String parentIds = menu.getParentIds();
-//                // 设置所有父节点信息
-//                if (!StringUtils.isEmpty(parentIds)) {
-//                    String[] parentIdArr = parentIds.split(",");
-//                    parentIdSet.addAll(Arrays.asList(parentIdArr));
-//                }
-//            }
-//
-//            list = getMenuTree(uniqueMenuIdSet, parentIdSet);
-//        }
-//
-//        if (!CollectionUtils.isEmpty(list)) {
-//            return list.get(0).getChildren();
-//        } else {
-//            return list;
-//        }
 
-//        return list.get(0).getChildren();
     }
 
     private List<MenuVo> getMenuTreeByRoleIdList(List<Integer> roleIdList) throws Exception{
         boolean isContinue = true;
         List<VandesrRoleMenu> roleMenus = getRoleMenuByRoleIds(roleIdList);
         // 存放该用户下的所有菜单id
-        Set<Integer> uniqueMenuIdSet = new HashSet<>();
         List<MenuVo> list = new ArrayList<>();
 
         List<VandesrMenu> menus = null;
         if (isContinue && !CollectionUtils.isEmpty(roleMenus)) {
             menus = this.getMenu(roleMenus);
         }
+
+        return getMenuTreeByMenus(menus);
+
+    }
+
+    /**
+     * 通过菜单信息构造菜单树
+     * 如果获取用户的菜单：先要查改用户的角色对应的菜单信息再调用该方法
+     * 如果是获取整个系统的菜单树信息，那么就是查询所有有效的菜单信息再调用该方法
+     * @date 2019年9月13日17:17:52
+     * @param menus
+     */
+    private List<MenuVo> getMenuTreeByMenus(List<VandesrMenu> menus) throws Exception{
+        List<MenuVo> list = new ArrayList<>();
         // 所有父节点id结合
         Set<String> parentIdSet = new HashSet<>();
+        Set<Integer> uniqueMenuIdSet = new HashSet<>();
 
         if (null != menus) {
             for (VandesrMenu menu : menus) {

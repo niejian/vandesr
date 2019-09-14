@@ -124,3 +124,28 @@ export function delMenu(data) {
     data
   })
 }
+
+/**
+ *通过用户角色获取到对应的菜单信息
+ * @param {roleId:xx} data 
+ */
+export function getMenuByRoleId(data) {
+  return request({
+    url: '/user/roleMenu/getMenuByRoleId',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ *
+ * 绑定菜单信息
+ * @param {roleId:xxx, data:[{menuId,menuCode, menuName}]}
+ */
+export function saveRoleMenu(data) {
+  return request({
+    url: '/user/roleMenu/saveRoleMenu',
+    method: 'post',
+    data
+  })
+}

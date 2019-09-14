@@ -25,7 +25,7 @@
         <el-button type="success" icon="el-icon-plus" @click="handleAdd()">添加</el-button>
         <el-button type="info" icon="el-icon-search" @click="handleView()">查看</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="handleEdit()">编辑</el-button>
-        <!-- <el-button type="warning" icon="el-icon-user" @click="handle()">绑定用户</el-button> -->
+        <el-button type="warning" icon="el-icon-menu" @click="handleBindMenu()">绑定菜单</el-button>
         <el-button type="danger" icon="el-icon-delete" class="red" @click="handleDelete()">删除</el-button>
       </div>
       <!-- 数据展示 -->
@@ -70,7 +70,7 @@
       </div>
 
 <!--      弹出编辑页面-->
-      <el-dialog :title="title" closeOnClickModal="false" :visible.sync="editVisible" width="30%">
+      <el-dialog :title="title" :closeOnClickModal="closeOnClickModal" :visible.sync="editVisible" width="30%">
         <el-form ref="formData" :model="formData" :rules="rules" label-width="150px">
           <el-form-item label="角色编码" prop="roleCode">
             <el-input v-model="formData.roleCode" :readonly="isReadOnly"></el-input>
@@ -85,22 +85,56 @@
           <el-button type="primary" @click="saveEdit('formData')">确 定</el-button>
         </span>
       </el-dialog>
+      <!-- 弹出菜单绑定页面 -->
+      <el-dialog title="菜单绑定" 
+        :closeOnClickModal="closeOnClickModal" 
+        @open="open"
+        @close="close"
+        :visible.sync="bindMenu" 
+        width="30%">
+        <div>
+          <el-tree
+            :data="menus"
+            show-checkbox
+            default-expand-all
+            check-on-click-node
+            node-key="menuId"
+            :default-checked-keys="bindMenuIds"
+            ref="tree"
+            highlight-current
+            :props="defaultProps"
+            >
+          </el-tree>
+          
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="cancelBtn('')">取 消</el-button>
+          <el-button type="primary" @click="saveRoleMenu()">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
-import {getRoleList, updateRole} from '@/api/user'
+import {getSystemMenus, getRoleList, updateRole, getMenuByRoleId, saveRoleMenu} from '@/api/user'
 export default {
   name: 'roleManage',
   data: function() {
     return {
       isReadOnly: true,
       closeOnClickModal: false,
+      bindMenu: false,
       title: '编辑',
       isShow: false,
       radio: '',
 		  selected:{},
+      menus: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      bindMenuIds: [],
       // 弹出编辑页面
       editVisible: false,
       roles: [],
@@ -137,6 +171,7 @@ export default {
   },
   created() {
     this.search();
+    // this.getSysMenus({})
   },
   methods: {
     // 每页条数变化
@@ -161,6 +196,19 @@ export default {
     onRowClick(row, index) {
       this.radio = this.roles.indexOf(row);
       this.selected= row;
+    },
+    // 获取菜单树信息
+    getSysMenus(data) {
+      getSystemMenus(data).then(response => {
+        let success = response.success;
+        let responseCode = response.responseCode;
+        if (success && responseCode === 0) {
+          this.menus = response.data
+          // console.log(this.menus)
+          
+        }
+        
+      })
     },
     search() {
       this.selected = {}
@@ -287,6 +335,106 @@ export default {
       });
       
     },
+    // 获取该角色绑定的菜单信息
+    getRoleMenu(roleId) {
+      getMenuByRoleId({roleId: roleId}).then(res => {
+        let responseCode = res.responseCode;
+        let responseMsg = res.responseMsg;
+        let success = res.success;
+        let roleMenus = res.data
+        if (success && responseCode === 0 
+          && roleMenus && roleMenus.length > 0) {
+            let length = roleMenus.length;
+            for(let i = 0; i < length; i++) {
+              let val = roleMenus[i];
+              this.bindMenuIds.push(val.menuId);
+
+            }
+                   
+        }
+
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+
+    open() {
+      this.menus = [];
+      this.bindMenuIds = [];
+      this.getSysMenus({});
+      let selectedId = this.selected.id;
+      if(!selectedId) {
+        return;
+      }
+      // 获取菜单树信息
+      
+    },
+    close () {
+      this.selected = {}
+      this.menus = [];
+      this.bindMenu = false;
+    },
+    
+    // 绑定菜单信息      
+    handleBindMenu() {
+      
+      let selectedId = this.selected.id;
+      this.isReadOnly = true;
+      if(!selectedId) {
+        this.$message({
+          type: 'warning',
+          showClose: true,
+          message: '请选择一条数据'
+        })
+        return false;
+      }
+
+      this.bindMenu = true;
+      
+      this.getRoleMenu(selectedId);
+      console.log(this.bindMenuIds)
+     
+    },
+
+    // 绑定菜单信息
+    saveRoleMenu() {
+      let checkedNodes = this.$refs.tree.getCheckedNodes();
+      //
+      if (!checkedNodes || checkedNodes.length <= 0) {
+        this.$message({
+          type: 'warning',
+          showClose: true,
+          message: '请选择绑定的菜单信息'
+        })
+        return false;
+      }
+
+      console.log(checkedNodes)
+      let data = {roleId: this.selected.id, data: checkedNodes}
+      saveRoleMenu(data).then(res => {
+        let responseCode = res.responseCode;
+        let success = res.success;
+        let responseMsg = res.responseMsg;
+
+        if (responseCode === 0 && success) {
+          this.$message({
+            type: 'success',
+            showClose: true,
+            message: "保存成功"
+          });
+          this.bindMenu = false;
+        } else {
+          this.$message({
+            type: 'error',
+            showClose: true,
+            message: responseMsg
+          });
+        }
+
+      }).catch(err => {
+        console.error(err)
+      })
+    },
 
     resetQuery() {
       this.formInline = {
@@ -326,7 +474,7 @@ export default {
     },
     // 删除
     deleteRole(row) {
-      debugger
+      
       this.formData.id = row.id;
       this.formData.type = 'del';
       // 删除操作
@@ -358,9 +506,14 @@ export default {
     // 取消
     cancelBtn(formName) {
       // this.formInline
-      this.$refs[formName].resetFields();
+      if ('' !== formName) {
+        this.$refs[formName].resetFields();
       
-      this.editVisible = false;
+        this.editVisible = false;
+      }else {
+        this.bindMenu = false;
+      }
+     
     }
   }
 }

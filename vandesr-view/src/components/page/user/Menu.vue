@@ -234,7 +234,7 @@ export default {
         let responseCode = response.responseCode;
         if (success && responseCode === 0) {
           this.menus = response.data
-          console.log(this.menus)
+          // console.log(this.menus)
         }
         
       })
@@ -306,6 +306,7 @@ export default {
       this.visible = true;
       this.disabled = false;
 
+
       let parentIds = this.menuDetail.parentIds;
       let parentId = this.menuDetail.menuId;
       let parentMenuName = this.menuDetail.parentMenuName;
@@ -330,7 +331,7 @@ export default {
             requestData = {type: 'update', data: this.menuDetail};
             msg = '菜单更新成功';
           }
-          debugger
+          
           addOrUpdateMenuInfo(requestData).then(response => {
             let success = response.success;
             let responseCode = response.responseCode;
@@ -429,14 +430,15 @@ export default {
     },
     selectChange(data) {
      //是叶子节点 data = false; 图标不显示
+     debugger
      if (!data) {
       this.iconShow = false;
-      this.menuDetail.routerPath = '#'
-      this.menuDetail.path = '#'
-     } else if (data) {
-      this.iconShow = true;
       this.menuDetail.routerPath = ''
       this.menuDetail.path = ''
+     } else if (data) {
+      this.iconShow = true;
+      this.menuDetail.routerPath = '#'
+      this.menuDetail.path = '#'
      }
     },
     refresh() {
