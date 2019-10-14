@@ -141,8 +141,6 @@ public class UserController {
 //                }
             }
 
-
-
             if (isContinue) {
                 UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(email, password);
                 Authentication authentication = authenticationManager.authenticate(upToken);
