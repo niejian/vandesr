@@ -19,6 +19,7 @@ import cn.com.vandesr.backend.config.web.BaseResponseExt;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.springframework.beans.BeanUtils;
@@ -134,10 +135,13 @@ public class UserController {
             VandesrUser user = null;
             if (isContinue) {
                 user = getUserByLoginAccount(email);
-                if (null == user) {
-                    throw new AccountNotFountException("登陆账号不存在");
-                }
+                Assert.notNull(user, "登陆账号不存在");
+//                if (null == user) {
+//                    throw new AccountNotFountException("登陆账号不存在");
+//                }
             }
+
+
 
             if (isContinue) {
                 UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(email, password);
