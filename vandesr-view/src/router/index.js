@@ -62,6 +62,11 @@ export default new Router({
               component: resolve => require(['@/components/page/user/User.vue'], resolve),
               title: '用户管理',
               meta: {title: '用户管理'}
+            },{
+              path: '/roleMenu',
+              component: resolve => require(['@/components/page/user/RoleMenu.vue'], resolve),
+              title: '角色菜单管理',
+              meta: {title: '角色菜单管理'}
             }
           ]
         },

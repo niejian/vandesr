@@ -80,3 +80,72 @@ export function updateUserRole(data) {
     data
   })
 }
+
+/**
+ * 获取系统菜单信息
+ * @param {data} data 
+ */
+export function getSystemMenus(data) {
+  return request({
+    url: '/user/menu/getSystemMenus',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 获取指定菜单的详细信息
+ * @param {id:''，menuCode: xxx, menuName:xxx} data 
+ */
+export function getMenuInfo(data) {
+  return request({
+    url: '/user/menu/getMenuInfo',
+    method: 'post',
+    data
+  })
+}
+
+export function addOrUpdateMenuInfo(data) {
+  return request({
+    url: '/user/menu/handleAddOrUpdate',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 删除菜单信息
+ * @param {menuId:xx} data 
+ */
+export function delMenu(data) {
+  return request({
+    url: '/user/menu/delMenu',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ *通过用户角色获取到对应的菜单信息
+ * @param {roleId:xx} data 
+ */
+export function getMenuByRoleId(data) {
+  return request({
+    url: '/user/roleMenu/getMenuByRoleId',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ *
+ * 绑定菜单信息
+ * @param {roleId:xxx, data:[{menuId,menuCode, menuName}]}
+ */
+export function saveRoleMenu(data) {
+  return request({
+    url: '/user/roleMenu/saveRoleMenu',
+    method: 'post',
+    data
+  })
+}

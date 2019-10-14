@@ -1,9 +1,6 @@
 package cn.com.vandesr.admin.service.impl;
 
-import cn.com.vandesr.admin.entity.VandesrMenu;
-import cn.com.vandesr.admin.entity.VandesrRoleMenu;
-import cn.com.vandesr.admin.entity.VandesrUser;
-import cn.com.vandesr.admin.entity.VandesrUserRole;
+import cn.com.vandesr.admin.entity.*;
 import cn.com.vandesr.admin.mapper.VandesrUserMapper;
 import cn.com.vandesr.admin.service.*;
 import cn.com.vandesr.admin.vo.MenuRouterVo;
@@ -45,6 +42,8 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
     private IVandesrRoleMenuService roleMenuService;
     @Autowired
     private IVandesrMenuService menuService;
+    @Autowired
+    private IVandesrRoleService roleService;
 
     SnowflakeIdWorker idWorker = new SnowflakeIdWorker(0, 0);
 
@@ -131,6 +130,40 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
     }
 
     /**
+     * 获取系统菜单树信息
+     *
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<MenuVo> getSystemMenuTree() throws Exception {
+        // 获取所有角色信息
+//        QueryWrapper<VandesrRole> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("delete_flag", 0);
+//        List<VandesrRole> roleList = this.roleService.list(queryWrapper);
+//        List<MenuVo> list = null;
+//        if (!CollectionUtils.isEmpty(roleList)) {
+//            List<Integer> roleIds = new ArrayList<>();
+//            roleList.forEach(r -> {
+//                roleIds.add(r.getId());
+//            });
+//            list = this.getMenuTreeByRoleIdList(roleIds);
+//        }
+        QueryWrapper<VandesrMenu> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("delete_flag", 0);
+        List<VandesrMenu> menus = this.menuService.list(queryWrapper);
+        if (null == menus) {
+            menus = new ArrayList<>();
+        }
+
+        List<MenuVo> list = this.getMenuTreeByMenus(menus);
+
+        return list;
+
+
+    }
+
+    /**
      * 获取用户菜单树 getUserMenuByUserId 的优化版本
      * 1. 数据表：role_menu存储的是menuid是叶子节点。
      * 2.获取该用户的所有角色对应的所有叶子节点信息。
@@ -144,8 +177,7 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
     @Override
     public List<MenuVo> getMenuTreeByUserId(Integer userId) throws Exception {
         boolean isContinue = true;
-        // 存放该用户下的所有菜单id
-        Set<Integer> uniqueMenuIdSet = new HashSet<>();
+
         // 获取角色信息
         List<VandesrUserRole> userRoleList = getUserRolesByUserId(userId);
         List<MenuVo> list = new ArrayList<>();
@@ -160,15 +192,40 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
             userRoleList.forEach(userRole -> {
                 roleIdList.add(userRole.getRoleId());
             });
-            roleMenus = getRoleMenuByRoleIds(roleIdList);
 
         }
+        list = this.getMenuTreeByRoleIdList(roleIdList);
+        return list;
+
+    }
+
+    private List<MenuVo> getMenuTreeByRoleIdList(List<Integer> roleIdList) throws Exception{
+        boolean isContinue = true;
+        List<VandesrRoleMenu> roleMenus = getRoleMenuByRoleIds(roleIdList);
+        // 存放该用户下的所有菜单id
+        List<MenuVo> list = new ArrayList<>();
+
         List<VandesrMenu> menus = null;
         if (isContinue && !CollectionUtils.isEmpty(roleMenus)) {
             menus = this.getMenu(roleMenus);
         }
+
+        return getMenuTreeByMenus(menus);
+
+    }
+
+    /**
+     * 通过菜单信息构造菜单树
+     * 如果获取用户的菜单：先要查改用户的角色对应的菜单信息再调用该方法
+     * 如果是获取整个系统的菜单树信息，那么就是查询所有有效的菜单信息再调用该方法
+     * @date 2019年9月13日17:17:52
+     * @param menus
+     */
+    private List<MenuVo> getMenuTreeByMenus(List<VandesrMenu> menus) throws Exception{
+        List<MenuVo> list = new ArrayList<>();
         // 所有父节点id结合
         Set<String> parentIdSet = new HashSet<>();
+        Set<Integer> uniqueMenuIdSet = new HashSet<>();
 
         if (null != menus) {
             for (VandesrMenu menu : menus) {
@@ -178,6 +235,9 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
                 if (!StringUtils.isEmpty(parentIds)) {
                     String[] parentIdArr = parentIds.split(",");
                     parentIdSet.addAll(Arrays.asList(parentIdArr));
+                }
+                if (!menu.isLeaf()) {
+                    parentIdSet.add(menu.getId() + "");
                 }
             }
 
@@ -189,8 +249,6 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
         } else {
             return list;
         }
-
-//        return list.get(0).getChildren();
     }
 
     /**
@@ -293,7 +351,7 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
                     MenuRouterVo vo = MenuRouterVo.builder()
                             .path(menu.getMenuUrl())
                             .title(menu.getMenuName())
-                            .component(menu.getMenuCode())
+                            .component(menu.getRouter())
                             .build();
                     list.add(vo);
                 }
@@ -518,15 +576,9 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
         String parentId = menu.getParentId() == null ? null : menu.getParentId() + "";
         MenuVo menuVo = (MenuVo.builder().parentId(parentId).icon(menu.getMenuIcon())
                 .title(menu.getMenuName()).name(menu.getMenuName()).menuId(menu.getId() + "")
-                .menuCode(menu.getMenuCode()).path(path)).routerPath(routerPath).build();
-//        menuVo.setParentId(parentId);
-//        menuVo.setIcon(menu.getMenuIcon());
-//        menuVo.setTitle(menu.getMenuName());
-//        menuVo.setName(menu.getMenuName());
-//        menuVo.setMenuId(menu.getId() + "");
-//        menuVo.setMenuCode(menu.getMenuCode());
-//        //路径
-//        menuVo.setPath(menu.getMenuUrl());
+                .menuCode(menu.getMenuCode()).path(path)).routerPath(routerPath)
+                .parentIds(menu.getParentIds()).build() ;
+
         return menuVo;
     }
 
@@ -540,7 +592,15 @@ public class VandesrUserServiceImpl extends ServiceImpl<VandesrUserMapper, Vande
             menuVo.setMenuCode(menu.getMenuCode());
             //路径
             menuVo.setPath(menu.getMenuUrl());
-            menuVoList.add(menuVo);
+            MenuVo menuVo2 = MenuVo.builder().icon(menu.getMenuIcon())
+                    .title(menu.getMenuName())
+                    .menuId(menu.getId() + "")
+                    .menuCode(menu.getMenuCode())
+                    .parentIds(menu.getParentIds())
+                    .parentId(menu.getParentId() + "")
+                    .path(menu.getMenuUrl())
+                    .build();
+            menuVoList.add(menuVo2);
         });
 
         return menuVoList;

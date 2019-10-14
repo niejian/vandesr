@@ -10,7 +10,6 @@ const whiteList = ['/login', '/dashboard', '/404', '/403'] // no redirect whitel
 
 router.beforeEach((to, from, next) => {
     NProgress.start()
-
     console.log('from:' + from.fullPath + "--->toPath:" + to.fullPath)
     // user authed routers
     let menuRouters = getSessionData('menuRouters');

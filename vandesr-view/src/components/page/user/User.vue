@@ -110,6 +110,9 @@
           <el-button @click="cancelBtn('')">取 消</el-button>
           <el-button type="primary" @click="saveEdit()">确 定</el-button>
         </span>
+        <span slot="footer" v-if="title === '查看'" class="dialog-footer">
+          <el-button type="warning" @click="cancelBtn('')">返 回</el-button>
+        </span>
 
         <!-- 该用户所绑定的角色信息 -->
         <!-- 
@@ -261,6 +264,7 @@ export default {
     // 查看用户信息
     handleView() {
       this.checkedRoles = [];
+      this.title = '查看'
       let selectedId = this.selected.id;
       if(!selectedId) {
         this.showAlert('warning', '请先选择一条数据')

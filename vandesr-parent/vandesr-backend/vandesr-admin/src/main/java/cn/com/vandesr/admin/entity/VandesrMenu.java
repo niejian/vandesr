@@ -22,6 +22,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class VandesrMenu implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -59,6 +60,10 @@ public class VandesrMenu implements Serializable {
 
     private boolean leaf;
 
+    private String router;
+
+
+
 //    private List<VandesrMenu> subs;
 //
 //    public void addSub(VandesrMenu menu) {
@@ -94,4 +99,5 @@ public class VandesrMenu implements Serializable {
         return Objects.hash(id, menuCode, menuName, menuIcon, menuUrl, parentId, parentIds,
                 permissions, deleteFlag, createDate, createUserCode, createUserName, updateDate, updateUserCode, updateUserName);
     }
+
 }

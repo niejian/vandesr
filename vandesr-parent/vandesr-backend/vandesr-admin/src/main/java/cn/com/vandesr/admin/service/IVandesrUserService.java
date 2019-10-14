@@ -63,6 +63,13 @@ public interface IVandesrUserService extends IService<VandesrUser> {
     List<MenuVo> getMenuTreeByUserId(Integer userId) throws Exception;
 
     /**
+     * 获取系统菜单树信息
+     * @return
+     * @throws Exception
+     */
+    List<MenuVo> getSystemMenuTree() throws Exception;
+
+    /**
      * 获取用户菜单信息
      * @param userId
      * @return
